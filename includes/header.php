@@ -12,6 +12,7 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css?<?php echo time(); ?>' rel='stylesheet'>
     <!-- main css file link -->
     <link rel="stylesheet" type="text/css" href="./assets/css/style.min.css?<?php echo time(); ?>">
+    <link rel="stylesheet" type="text/css" href="../assets/css/style.min.css?<?php echo time(); ?>">
 
 </head>
 

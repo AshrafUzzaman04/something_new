@@ -263,10 +263,17 @@ header {
           text-align: center;
           font-size: 35px;
         }
+        .input_box.invalid {
+          > input {
+            border-bottom: 2px solid var(--red);
+          }
+          > label {
+            color: var(--red);
+          }
+        }
         > .input_box {
           width: 340px;
           height: 50px;
-          border-bottom: 2px solid var(--white);
           margin: 30px 0;
           position: relative;
           > input {
@@ -279,16 +286,39 @@ header {
             padding-left: 5px;
             padding-right: 28px;
             color: var(--white);
+            border-bottom: 2px solid var(--white);
+            transition: all 0.3s ease-in-out;
+            &::placeholder {
+              color: transparent;
+            }
+            &:placeholder-shown ~ label {
+              font-size: 17px;
+              cursor: text;
+              top: 25px;
+            }
+          }
+          > input:focus ~ label {
+            top: 0;
           }
           > .icon {
             position: absolute;
             top: 13px;
             right: 0;
             font-size: 19px;
+            cursor: pointer;
+            > #hide {
+              display: none;
+            }
+            > #s_hide {
+              display: none;
+            }
+            > #scp_hide {
+              display: none;
+            }
           }
           > label {
             position: absolute;
-            top: 50%;
+            top: 0;
             padding-left: 5px;
             left: 0;
             transform: translateY(-50%);
@@ -296,13 +326,9 @@ header {
             font-weight: 500;
             color: var(--white);
             transition: all 0.3s ease-in-out;
+            display: block;
+            pointer-events: none;
           }
-        }
-        > .input_box input:focus ~ label,
-        .input_box input:valid ~ label {
-          top: -5px;
-          color: var(--red);
-          font-weight: 600;
         }
         > .remmember_password {
           font-size: 14px;
@@ -370,7 +396,7 @@ header {
       }
     }
     > .register {
-      transform: translateY(-460px);
+      transform: translateY(-560px);
       transition: transform 0.6s ease-in-out;
     }
     > .login {
@@ -384,7 +410,7 @@ header {
       transition-delay: 0.3s;
     }
     > .form_box.login {
-      transform: translateY(430px);
+      transform: translateY(560px);
       transition-delay: 0.2s;
     }
   }
