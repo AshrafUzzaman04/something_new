@@ -33,11 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
     }
 }
 
-// if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['signUp123'])) {
-//     $register_email = $_POST['register_email'];
-//     $register_password = $_POST['register_password'];
-//     $register_c_password = $_POST['register_c_password'];
-// }
+// sign in form validations
 if (isset($_POST['email'])) {
     exit('hi');
 }
@@ -109,7 +105,7 @@ if (isset($_POST['email'])) {
                     <input type="password" name="register_c_password" placeholder="Confirm Password" id="scp_password">
                     <label for="scp_password"><i class='bx bxs-lock'></i> Confirm Password</label>
                 </div>
-                <button class="btn" id="submit123">Sign Up</button>
+                <button class="btn" type="button" id="register123">Sign Up</button>
                 <div class="create_account">
                     <p><a href="./"><i class='bx bx-arrow-back'></i>back</a></p>
                     <p>Already have an Account? <a href="javascript:void(0)" class="sign_in">Sign In</a></p>
@@ -121,17 +117,24 @@ if (isset($_POST['email'])) {
 <!-- jquery cdn -->
 <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script type="text/javascript">
-    $('#submit123').click(function() {
+    $('#register123').click(function() {
         alert("hi");
-        // var email = $('#r_email').val();
-        // $.ajax({
-        //     type: "POST",
-        //     url: "",
-        //     data: {
-        //         "email": email
-        //     },
-        //     success: function(data) {}
-        // });
+        var r_email = $('#r_email').val();
+        var s_password = $('#s_password').val();
+        var scp_password = $('#scp_password').val();
+        $.ajax({
+            type: "POST",
+            url: "",
+            data: {
+                "r_email": r_email,
+                "s_password": s_password,
+                "scp_password": scp_password
+
+            },
+            success: function(data) {
+
+            }
+        });
     });
 </script>
 <?php
