@@ -4,7 +4,13 @@
 <!-- ion icons script -->
 <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+<!-- register -->
 <script src="./assets/js/index.js?<?= time(); ?>"></script>
+<!-- gsap link -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js" integrity="sha512-f8mwTB+Bs8a5c46DEm7HQLcJuHMBaH/UFlcgyetMqqkvTcYg4g5VXsYR71b3qC82lZytjNYvBj2pf0VekA9/FQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="assets/js/gsap.js?<?= time(); ?>"></script>
+<!-- navigaiton -->
+<script src="assets/js/nav.js?<?= time(); ?>"></script>
 </body>
 
 </html>

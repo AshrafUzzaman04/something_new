@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Fira+Mono:wght@500&display=swap");
 body {
-  height: 95vh;
+  max-height: 100vh;
+  min-height: 100vh;
   background: #000000;
   text-align: center;
   color: #e0e0e0;

@@ -33,11 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
     }
 }
 
-// sign in form validations
-if (isset($_POST['email'])) {
-    exit('hi');
-}
-
 ?>
 <section class="form_section">
     <div class="login_section">
@@ -124,8 +119,9 @@ if (isset($_POST['email'])) {
         var scp_password = $('#scp_password').val();
         $.ajax({
             type: "POST",
-            url: "",
+            url: "validaton.php",
             data: {
+                "register": "register",
                 "r_email": r_email,
                 "s_password": s_password,
                 "scp_password": scp_password

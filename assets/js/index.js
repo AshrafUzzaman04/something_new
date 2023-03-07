@@ -2,6 +2,7 @@
 const login_section = document.querySelector(".login_section");
 const sign_in = document.querySelector(".sign_in");
 const sign_up = document.querySelector(".sign_up");
+
 // password show and hide buttons
 var password = document.getElementById("password");
 var s_password = document.getElementById("s_password");

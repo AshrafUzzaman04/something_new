@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Michroma&display=swap");
+
 * {
   margin: 0;
   padding: 0;
@@ -441,6 +443,54 @@ header {
           }
         }
       }
+    }
+  }
+}
+
+//============================================================
+//============================== loading page ===================================
+//============================================================
+.loading_page {
+  font-family: "Michroma", sans-serif;
+  position: fixed;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  background: var(--nav_bg);
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  > #svg {
+    height: 150px;
+    width: 150px;
+    stroke: var(--red);
+    fill-opacity: 0;
+    stroke-width: 1px;
+    stroke-dasharray: 500;
+    animation: draw 8s ease;
+  }
+  @keyframes draw {
+    0% {
+      stroke-dashoffset: 500;
+    }
+    100% {
+      stroke-dashoffset: 0;
+    }
+  }
+  > .name_container_logo {
+    overflow: hidden;
+    > .logo_name {
+      text-align: center;
+      color: var(--white);
+      font-size: 18px;
+      letter-spacing: 12px;
+      text-transform: uppercase;
+      margin-left: 20px;
     }
   }
 }
