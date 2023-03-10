@@ -1,4 +1,4 @@
-<header>
+<header id="navbar">
     <a href="./" class="logo"><img src="./assets/img/logo.png" alt=""></a>
     <div class="group">
         <ul class="navigation" id="nav_list">

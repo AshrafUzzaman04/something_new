@@ -31,3 +31,18 @@ colse_manu.addEventListener("click", () => {
   colse_manu.classList.add("d-none");
   open_manu.classList.remove("d-none");
 });
+
+// navbar window scroll events
+
+var prevScrollpos = window.pageYOffset;
+var navbar = document.getElementById("navbar");
+
+window.onscroll = function () {
+  var currentScrollPos = window.pageYOffset;
+  if (prevScrollpos > currentScrollPos) {
+    navbar.style.top = "0";
+  } else {
+    navbar.style.top = "-200px";
+  }
+  prevScrollpos = currentScrollPos;
+};

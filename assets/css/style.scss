@@ -13,12 +13,32 @@
 body {
   background-color: var(--white);
 }
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
 
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 12px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--nav_bg);
+}
 //============================================================
 //============================== navbar header section ===================================
 //============================================================
 header {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -30,6 +50,7 @@ header {
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 10px 10px rgba(0, 0, 0, 0.123);
+  transition: all 0.5s ease-in-out;
   // logo section header
   > .logo {
     > img {
