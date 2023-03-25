@@ -1,10 +1,21 @@
 <?php
 include_once('./includes/header.php');
 
+$conn = mysqli_connect("localhost", "root", "", "something_new");
+
+function sefuda($data)
+{
+    $data = htmlspecialchars($data);
+    $data = trim($data);
+    $data = stripslashes($data);
+
+    return $data;
+}
+
 // login form validation rules
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
-    $log_Email = $_POST['log_Email'];
-    $log_Password = $_POST['log_Password'];
+    $log_Email = sefuda($_POST['log_Email']);
+    $log_Password = sefuda($_POST['log_Password']);
 
     // email is required
     if (empty($log_Email)) {
@@ -15,12 +26,13 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
         $correct_email = $log_Email;
     }
 
+
+    // password validation
     $lowercase = preg_match('@[a-z]@', $log_Password);
     $number    = preg_match('@[0-9]@', $log_Password);
-    // password validation
     if (empty($log_Password)) {
         $error_pass = "Enter your password";
-    } elseif (!$lowercase || !$number || strlen($log_Password) < 8) {
+    } elseif (!$lowercase || !$number || strlen($log_Password) < 6) {
         $error_pass = "You must use a strong password";
     } else {
         $correct_pass = $log_Password;
@@ -99,6 +111,10 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
                     </span>
                     <input type="password" name="register_c_password" placeholder="Confirm Password" id="scp_password">
                     <label for="scp_password"><i class='bx bxs-lock'></i> Confirm Password</label>
+                    <!-- all error msg -->
+                    <span class="fw-bold text-danger mail_error" class=""><?= $error_r_email ?? null ?></span>
+                    <span class="fw-bold text-danger register_pass_error" class=""><?= $error_s_password ?? null  ?></span>
+                    <span class="fw-bold text-danger register_conpass_error" class=""><?= $error_scp_password ?? null  ?></span>
                 </div>
                 <button class="btn" type="button" id="register123">Sign Up</button>
                 <div class="create_account">
@@ -113,7 +129,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
 <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script type="text/javascript">
     $('#register123').click(function() {
-        alert("hi");
         var r_email = $('#r_email').val();
         var s_password = $('#s_password').val();
         var scp_password = $('#scp_password').val();
@@ -128,7 +143,9 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
 
             },
             success: function(data) {
-
+                $('.mail_error').html(data);
+                $('.register_pass_error').html(data);
+                $('.register_conpass_error').html(data);
             }
         });
     });
