@@ -12,7 +12,7 @@ function sefuda($data)
 }
 
 // sign up form validations
-if ($_SERVER['REQUEST_METHOD'] && isset($_POST['register'])) {
+if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register123'])) {
     if (isset($_POST['r_email']) && isset($_POST['s_password']) && isset(['scp_password'])) {
         $r_email =  sefuda($_POST['r_email']);
         $s_password = sefuda($_POST['s_password']);
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] && isset($_POST['register'])) {
             $error_r_email = "Invalid email address!";
         } elseif (empty($s_password)) {
             $error_s_password = "Must be provided by your password!";
-        } elseif (!$lowercase || !$number || strlen($s_password)) {
+        } elseif (!$lowercase || !$number || strlen($s_password) < 6) {
             $error_s_password = "You must use a strong password!";
         } elseif (empty($scp_password)) {
             $error_scp_password = "Please enter your password again!";
@@ -36,7 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] && isset($_POST['register'])) {
         } else {
             $student_data_insert = $conn->query("INSERT INTO `students`(`student_email`, `student_pass`) VALUES ('$r_email','$s_password')");
 
-            echo "<script>alert('good')</script>";
+            if ($student_data_insert) {
+                echo "Data inserted successfully!";
+            }
         }
     }
 }

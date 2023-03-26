@@ -44,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
         header("Location: ./");
     }
 }
-
 ?>
 <section class="form_section">
     <div class="login_section">
@@ -54,11 +53,13 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
         <div class="form_box login">
             <form action="<?= substr($_SERVER['PHP_SELF'], 0, -4) ?>" method="POST">
                 <h2>Sign In</h2>
+
                 <!-- email -->
                 <div class="input_box <?= $error_email ? "invalid" : null ?>">
                     <input type="email" name="log_Email" id="email" placeholder="Email" class="<?= $error_email ? "invalid" : null ?>" value="<?= $log_Email ?? null ?>">
                     <label for="email"><i class='bx bxs-envelope'></i> Email</label>
                 </div>
+
                 <!-- password -->
                 <div class="input_box <?= $error_pass ? "invalid" : null ?>">
                     <span class="icon">
@@ -72,9 +73,12 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
                     <label for="checkbox"><input type="checkbox" id="checkbox">Remmember Me</label>
                     <a href="#">Forget Password</a>
                 </div>
+
+                <!-- all error msg -->
                 <div class="error_messege mb-3">
                     <strong class="text-danger"><?= ($error_email ?? $error_pass ?? null) ?></strong>
                 </div>
+
                 <!-- submit -->
                 <button class="btn" type="submit" name="login123">Log In</button>
                 <div class="create_account">
@@ -89,11 +93,13 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
         <div class="form_box register">
             <form action="" method="POST">
                 <h2>Sign Up</h2>
+
                 <!-- email -->
                 <div class="input_box">
                     <input type="email" name="register_email" placeholder="Email" id="r_email">
                     <label for="r_email"> <i class='bx bxs-envelope'></i> Email</label>
                 </div>
+
                 <!-- password -->
                 <div class="input_box">
                     <span class="icon">
@@ -103,6 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
                     <input type="password" name="register_password" placeholder="Password" id="s_password">
                     <label for="s_password"><i class='bx bxs-lock'></i> Password</label>
                 </div>
+
                 <!-- confirm password -->
                 <div class="input_box">
                     <span class="icon">
@@ -111,12 +118,15 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
                     </span>
                     <input type="password" name="register_c_password" placeholder="Confirm Password" id="scp_password">
                     <label for="scp_password"><i class='bx bxs-lock'></i> Confirm Password</label>
-                    <!-- all error msg -->
-                    <span class="fw-bold text-danger mail_error" class=""><?= $error_r_email ?? null ?></span>
-                    <span class="fw-bold text-danger register_pass_error" class=""><?= $error_s_password ?? null  ?></span>
-                    <span class="fw-bold text-danger register_conpass_error" class=""><?= $error_scp_password ?? null  ?></span>
                 </div>
-                <button class="btn" type="button" id="register123">Sign Up</button>
+
+                <!-- all error msg -->
+                <div class="error_messege mb-3">
+                    <strong class="text-danger"><?= ($error_r_email ?? $error_s_password ?? $error_scp_password ?? null) ?></strong>
+                </div>
+
+                <button class="btn" type="button" name="register123">Sign Up</button>
+
                 <div class="create_account">
                     <p><a href="./"><i class='bx bx-arrow-back'></i>back</a></p>
                     <p>Already have an Account? <a href="javascript:void(0)" class="sign_in">Sign In</a></p>
@@ -126,29 +136,29 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
     </div>
 </section>
 <!-- jquery cdn -->
-<script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script> -->
 <script type="text/javascript">
-    $('#register123').click(function() {
-        var r_email = $('#r_email').val();
-        var s_password = $('#s_password').val();
-        var scp_password = $('#scp_password').val();
-        $.ajax({
-            type: "POST",
-            url: "validaton.php",
-            data: {
-                "register": "register",
-                "r_email": r_email,
-                "s_password": s_password,
-                "scp_password": scp_password
+    // $('#register123').click(function() {
+    //     var r_email = $('#r_email').val();
+    //     var s_password = $('#s_password').val();
+    //     var scp_password = $('#scp_password').val();
+    //     $.ajax({
+    //         type: "POST",
+    //         url: "validaton.php",
+    //         data: {
+    //             "register": "register",
+    //             "r_email": r_email,
+    //             "s_password": s_password,
+    //             "scp_password": scp_password
 
-            },
-            success: function(data) {
-                $('.mail_error').html(data);
-                $('.register_pass_error').html(data);
-                $('.register_conpass_error').html(data);
-            }
-        });
-    });
+    //         },
+    //         success: function(data) {
+    //             $('.mail_error').html(data);
+    //             $('.register_pass_error').html(data);
+    //             $('.register_conpass_error').html(data);
+    //         }
+    //     });
+    // });
 </script>
 <?php
 include_once('./includes/footer.php')
