@@ -95,13 +95,13 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
                 <h2>Sign Up</h2>
 
                 <!-- email -->
-                <div class="input_box">
+                <div class="input_box i-one">
                     <input type="email" name="register_email" placeholder="Email" id="r_email">
                     <label for="r_email"> <i class='bx bxs-envelope'></i> Email</label>
                 </div>
 
                 <!-- password -->
-                <div class="input_box">
+                <div class="input_box i-two">
                     <span class="icon">
                         <ion-icon name="eye-off-outline" id="s_show" onclick="s_toggle()"></ion-icon>
                         <ion-icon name="eye-outline" id="s_hide" onclick="s_toggle()"></ion-icon>
@@ -111,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
                 </div>
 
                 <!-- confirm password -->
-                <div class="input_box">
+                <div class="input_box i-three">
                     <span class="icon">
                         <ion-icon name="eye-off-outline" id="scp_show" onclick="scp_toggle()"></ion-icon>
                         <ion-icon name="eye-outline" id="scp_hide" onclick="scp_toggle()"></ion-icon>
@@ -122,10 +122,10 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
 
                 <!-- all error msg -->
                 <div class="error_messege mb-3">
-                    <strong class="text-danger"><?= ($error_r_email ?? $error_s_password ?? $error_scp_password ?? null) ?></strong>
+                    <strong class="text-danger" id="error-msg"></strong>
                 </div>
 
-                <button class="btn" type="button" name="register123">Sign Up</button>
+                <button class="btn" type="button" id="register123">Sign Up</button>
 
                 <div class="create_account">
                     <p><a href="./"><i class='bx bx-arrow-back'></i>back</a></p>
@@ -136,29 +136,52 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
     </div>
 </section>
 <!-- jquery cdn -->
-<!-- <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script> -->
+<script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script type="text/javascript">
-    // $('#register123').click(function() {
-    //     var r_email = $('#r_email').val();
-    //     var s_password = $('#s_password').val();
-    //     var scp_password = $('#scp_password').val();
-    //     $.ajax({
-    //         type: "POST",
-    //         url: "validaton.php",
-    //         data: {
-    //             "register": "register",
-    //             "r_email": r_email,
-    //             "s_password": s_password,
-    //             "scp_password": scp_password
+    $('#register123').click(function() {
+        var r_email = $('#r_email').val();
+        var s_password = $('#s_password').val();
+        var scp_password = $('#scp_password').val();
+        $.ajax({
+            type: "POST",
+            url: "validation.php",
+            data: {
+                "register": "register",
+                "r_email": r_email,
+                "s_password": s_password,
+                "scp_password": scp_password
+            },
+            success: function(data) {
+                var data = JSON.parse(data);
 
-    //         },
-    //         success: function(data) {
-    //             $('.mail_error').html(data);
-    //             $('.register_pass_error').html(data);
-    //             $('.register_conpass_error').html(data);
-    //         }
-    //     });
-    // });
+                var error_for = data.error_for;
+                var error_msg = data.msg;
+
+                $('#error-msg').html(error_msg);
+
+                switch (error_for) {
+                    case 1:
+                        $('.i-one').addClass('invalid');
+                        $('#r_email').addClass('invalid');
+                        break;
+                    case 2:
+                        $('.i-one').removeClass('invalid');
+                        $('#r_email').removeClass('invalid');
+                        $('.i-two').addClass('invalid');
+                        $('#s_password').addClass('invalid');
+                        break;
+                    case 3:
+                        $('.i-two').removeClass('invalid');
+                        $('#s_password').removeClass('invalid');
+                        $('.i-three').addClass('invalid');
+                        $('#scp_password').addClass('invalid');
+                        break;
+                    default:
+                        $('#error-msg').html(error_msg);
+                }
+            }
+        });
+    });
 </script>
 <?php
 include_once('./includes/footer.php')

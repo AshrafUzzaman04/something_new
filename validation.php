@@ -12,8 +12,8 @@ function sefuda($data)
 }
 
 // sign up form validations
-if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register123'])) {
-    if (isset($_POST['r_email']) && isset($_POST['s_password']) && isset(['scp_password'])) {
+if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register'])) {
+    if (isset($_POST['r_email'], $_POST['s_password'], $_POST['scp_password'])) {
         $r_email =  sefuda($_POST['r_email']);
         $s_password = sefuda($_POST['s_password']);
         $scp_password = sefuda($_POST['scp_password']);
@@ -22,17 +22,41 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register123'])) {
         $lowercase = preg_match('@[a-z]@', $s_password);
         $number    = preg_match('@[0-9]@', $s_password);
         if (empty($r_email)) {
-            $error_r_email = "Must be provided by your email.";
+            $res =  array(
+                'error_for' => 1,
+                'msg' => 'Must be provide your email.'
+            );
+            exit(json_encode($res));
         } elseif (!filter_var($r_email, FILTER_VALIDATE_EMAIL)) {
-            $error_r_email = "Invalid email address!";
+            $res =  array(
+                'error_for' => 1,
+                'msg' => 'Invalid email address!'
+            );
+            exit(json_encode($res));
         } elseif (empty($s_password)) {
-            $error_s_password = "Must be provided by your password!";
+            $res = array(
+                'error_for' => 2,
+                'msg' => 'Must be provide your password!'
+            );
+            exit(json_encode($res));
         } elseif (!$lowercase || !$number || strlen($s_password) < 6) {
-            $error_s_password = "You must use a strong password!";
+            $res = array(
+                'error_for' => 2,
+                'msg' => 'You must use a strong password!'
+            );
+            exit(json_encode($res));
         } elseif (empty($scp_password)) {
-            $error_scp_password = "Please enter your password again!";
+            $res = array(
+                'error_for' => 3,
+                'msg' => 'Please enter your password again!'
+            );
+            exit(json_encode($res));
         } elseif ($s_password !== $scp_password) {
-            $error_scp_password = "Your password must be the same!";
+            $res = array(
+                'error_for' => 3,
+                'msg' => 'Your password must be the same!'
+            );
+            exit(json_encode($res));
         } else {
             $student_data_insert = $conn->query("INSERT INTO `students`(`student_email`, `student_pass`) VALUES ('$r_email','$s_password')");
 
