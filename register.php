@@ -28,23 +28,28 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
 
 
     // password validation
-    $lowercase = preg_match('@[a-z]@', $log_Password);
-    $number    = preg_match('@[0-9]@', $log_Password);
     if (empty($log_Password)) {
         $error_pass = "Enter your password";
-    } elseif (!$lowercase || !$number || strlen($log_Password) < 6) {
-        $error_pass = "You must use a strong password";
     } else {
         $correct_pass = $log_Password;
     }
 
 
     if (isset($correct_email) && isset($correct_pass)) {
-        $log_Email = $log_Password = null;
-        header("Location: ./");
+        $verify_data = $conn->query("SELECT * FROM `students` WHERE `student_email` = '$correct_email' AND `student_pass` = '$correct_pass';");
+
+        if ($verify_data->num_rows !== 1) {
+            echo "<script>alert('fuck you')</script>";
+        } else {
+            $log_Email = $log_Password = null;
+            header("location:./");
+        }
     }
 }
+
+// include_once("./includes/loadingp.php");
 ?>
+
 <section class="form_section">
     <div class="login_section">
         <!-- ================================================================ -->
@@ -124,6 +129,9 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
                 <div class="error_messege mb-3">
                     <strong class="text-danger" id="error-msg"></strong>
                 </div>
+                <div class="success_msg mb-3">
+                    <strong class="text-success" id="success-msg"></strong>
+                </div>
 
                 <button class="btn" type="button" id="register123">Sign Up</button>
 
@@ -157,27 +165,30 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
                 var error_for = data.error_for;
                 var error_msg = data.msg;
 
-                $('#error-msg').html(error_msg);
-
-                switch (error_for) {
-                    case 1:
-                        $('.i-one').addClass('invalid');
-                        $('#r_email').addClass('invalid');
-                        break;
-                    case 2:
-                        $('.i-one').removeClass('invalid');
-                        $('#r_email').removeClass('invalid');
-                        $('.i-two').addClass('invalid');
-                        $('#s_password').addClass('invalid');
-                        break;
-                    case 3:
-                        $('.i-two').removeClass('invalid');
-                        $('#s_password').removeClass('invalid');
-                        $('.i-three').addClass('invalid');
-                        $('#scp_password').addClass('invalid');
-                        break;
-                    default:
-                        $('#error-msg').html(error_msg);
+                if (error_for === 1) {
+                    $('.i-one').addClass('invalid');
+                    $('#r_email').addClass('invalid');
+                    $('#error-msg').html(error_msg);
+                } else if (error_for === 2) {
+                    $('.i-one').removeClass('invalid');
+                    $('#r_email').removeClass('invalid');
+                    $('.i-two').addClass('invalid');
+                    $('#s_password').addClass('invalid');
+                    $('#error-msg').html(error_msg);
+                } else if (error_for === 3) {
+                    $('.i-two').removeClass('invalid');
+                    $('#s_password').removeClass('invalid');
+                    $('.i-three').addClass('invalid');
+                    $('#scp_password').addClass('invalid');
+                    $('#error-msg').html(error_msg);
+                } else {
+                    $('.input_box').removeClass('invalid');
+                    $('.input_box').children('input').removeClass('invalid');
+                    $('#error-msg').remove();
+                    $('#success-msg').html(error_msg);
+                    setInterval(() => {
+                        location.href = "./";
+                    }, 1000)
                 }
             }
         });
