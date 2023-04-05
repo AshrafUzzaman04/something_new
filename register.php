@@ -1,7 +1,6 @@
 <?php
+include_once('./connection.php');
 include_once('./includes/header.php');
-
-$conn = mysqli_connect("localhost", "root", "", "something_new");
 
 function sefuda($data)
 {
@@ -16,6 +15,7 @@ function sefuda($data)
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
     $log_Email = sefuda($_POST['log_Email']);
     $log_Password = sefuda($_POST['log_Password']);
+    $remember_me = sefuda(($_POST['remember_me']) ?? null);
 
     // email is required
     if (empty($log_Email)) {
@@ -23,7 +23,12 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
     } elseif (!filter_var($log_Email, FILTER_VALIDATE_EMAIL)) {
         $error_email = "Invalid email address";
     } else {
-        $correct_email = $log_Email;
+        $verify_data = $conn->query("SELECT * FROM `students` WHERE `student_email` = '$log_Email'");
+        if ($verify_data->num_rows !== 1) {
+            $error_email = "Email can't exist!";
+        } else {
+            $correct_email = mysqli_real_escape_string($conn, $log_Email);
+        }
     }
 
 
@@ -31,15 +36,28 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
     if (empty($log_Password)) {
         $error_pass = "Enter your password";
     } else {
-        $correct_pass = $log_Password;
+        $verify_data = $conn->query("SELECT * FROM `students` WHERE `student_pass` = '$log_Password';");
+        $verify_status = $conn->query("SELECT * FROM `students` WHERE `student_email` = '$log_Email' AND `student_status` = 'active';");
+        if ($verify_data->num_rows !== 1) {
+            $error_email = "Incorrect password!";
+        } elseif ($verify_status->num_rows !== 1) {
+            $error_email = "Activate ID through the link sent in Gmail!";
+        } else {
+            $correct_pass = mysqli_real_escape_string($conn, $log_Password);
+        }
     }
 
 
     if (isset($correct_email) && isset($correct_pass)) {
-        $verify_data = $conn->query("SELECT * FROM `students` WHERE `student_email` = '$correct_email' AND `student_pass` = '$correct_pass';");
 
-        if ($verify_data->num_rows !== 1) {
-            echo "<script>alert('fuck you')</script>";
+        if (isset($remember_me)) {
+            // setcookie
+            setcookie('emailcookie', $correct_email, time() + 3600);
+            setcookie('passwordcookie', $correct_pass, time() + 3600);
+
+            $log_Email = $log_Password = null;
+            header("location:./");
+            exit($mailSender);
         } else {
             $log_Email = $log_Password = null;
             header("location:./");
@@ -56,12 +74,20 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
         <!-- ======================= sign in section =========================-->
         <!-- ================================================================ -->
         <div class="form_box login">
-            <form action="<?= substr($_SERVER['PHP_SELF'], 0, -4) ?>" method="POST">
+            <form action="<?= htmlentities(substr($_SERVER['PHP_SELF'], 0, -4)) ?>" method="POST">
                 <h2>Sign In</h2>
 
                 <!-- email -->
                 <div class="input_box <?= $error_email ? "invalid" : null ?>">
-                    <input type="email" name="log_Email" id="email" placeholder="Email" class="<?= $error_email ? "invalid" : null ?>" value="<?= $log_Email ?? null ?>">
+                    <input type="email" name="log_Email" id="email" placeholder="Email" class="<?= $error_email ? "invalid" : null ?>" value="<?php
+
+                                                                                                                                                if (isset($log_Email)) {
+                                                                                                                                                    echo $log_Email;
+                                                                                                                                                } else {
+                                                                                                                                                    if (isset($_COOKIE['emailcookie'])) {
+                                                                                                                                                        echo $_COOKIE['emailcookie'];
+                                                                                                                                                    }
+                                                                                                                                                } ?>">
                     <label for="email"><i class='bx bxs-envelope'></i> Email</label>
                 </div>
 
@@ -71,11 +97,18 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
                         <ion-icon name="eye-off-outline" id="show" onclick="toggle()"></ion-icon>
                         <ion-icon name="eye-outline" id="hide" onclick="toggle()"></ion-icon>
                     </span>
-                    <input type="password" name="log_Password" id="password" placeholder="Password" class="<?= $error_pass ? "invalid" : null ?>" value="<?= $log_Password ?? null ?>">
+                    <input type="password" name="log_Password" id="password" placeholder="Password" class="<?= $error_pass ? "invalid" : null ?>" value="<?php
+                                                                                                                                                            if (isset($log_Password)) {
+                                                                                                                                                                echo $log_Password;
+                                                                                                                                                            } else {
+                                                                                                                                                                if (isset($_COOKIE['passwordcookie'])) {
+                                                                                                                                                                    echo $_COOKIE['passwordcookie'];
+                                                                                                                                                                }
+                                                                                                                                                            } ?>">
                     <label for="password"><i class='bx bxs-lock'></i> Password</label>
                 </div>
                 <div class="remmember_password">
-                    <label for="checkbox"><input type="checkbox" id="checkbox">Remmember Me</label>
+                    <label for="checkbox"><input type="checkbox" id="checkbox" name="remember_me">Remmember Me</label>
                     <a href="#">Forget Password</a>
                 </div>
 
@@ -86,6 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
 
                 <!-- submit -->
                 <button class="btn" type="submit" name="login123">Log In</button>
+
                 <div class="create_account">
                     <p><a href="./"><i class='bx bx-arrow-back'></i>back</a></p>
                     <p>Create an Account? <a href="javascript:void(0)" class="sign_up">Sign Up</a></p>
@@ -147,6 +181,10 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
 <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script type="text/javascript">
     $('#register123').click(function() {
+        $('#register123').html('Sign Up <i style="font-size:24px;" class="fa-solid fa-spinner fa-spin"></i>');
+        setTimeout(function() {
+            $('#register123').html('Sign Up');
+        }, 2300);
         var r_email = $('#r_email').val();
         var s_password = $('#s_password').val();
         var scp_password = $('#scp_password').val();
@@ -187,8 +225,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
                     $('#error-msg').remove();
                     $('#success-msg').html(error_msg);
                     setInterval(() => {
-                        location.href = "./";
-                    }, 1000)
+                        location.href = "./register";
+                    }, 2300)
                 }
             }
         });

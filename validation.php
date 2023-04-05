@@ -3,6 +3,48 @@
 include_once("./connection.php");
 
 
+//Import PHPMailer classes into the global namespace
+//These must be at the top of your script, not inside a function
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
+function mailsender($recipient_email, $mailbody)
+{
+    //Load Composer's autoloader
+    require './PHPMailer/Exception.php';
+    require './PHPMailer/PHPMailer.php';
+    require './PHPMailer/SMTP.php';
+
+    //Create an instance; passing `true` enables exceptions
+    $mail = new PHPMailer(true);
+    try {
+        //Server settings
+        $mail->isSMTP();                                            //Send using SMTP
+        $mail->Host       = 'smtp.gmail.com';                     //Set the SMTP server to send through
+        $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+        $mail->Username   = 'ashraf.uzzaman04082004@gmail.com';                     //SMTP username
+        $mail->Password   = 'hkythzeirkteovuz';                            //SMTP password
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
+        $mail->Port       = 465;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+
+        //Recipients
+        $mail->setFrom('ashraf.uzzaman04082004@gmail.com', 'WebcoderAshraf');
+        $mail->addAddress($recipient_email);     //Add a recipient
+
+        //Content
+        $mail->isHTML(true);                                  //Set email format to HTML
+        $mail->Subject = 'Your Activation Code!';
+        $mail->Body    = $mailbody;
+
+        $mail->send();
+        // echo 'Message has been sent';
+    } catch (Exception $e) {
+        // echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+    }
+}
+
+
 function sefuda($data)
 {
     $data = htmlspecialchars($data);
@@ -18,6 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register'])) {
         $r_email =  sefuda($_POST['r_email']);
         $s_password = sefuda($_POST['s_password']);
         $scp_password = sefuda($_POST['scp_password']);
+
+        $token = bin2hex(random_bytes(10));
 
 
         // search the existing email address
@@ -75,8 +119,22 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register'])) {
             );
             exit(json_encode($res));
         } else {
-            $student_data_insert = $conn->query("INSERT INTO `students`(`student_email`, `student_pass`) VALUES ('$r_email','$s_password')");
+            $student_data_insert = $conn->query("INSERT INTO `students`(`student_email`, `student_pass` , `token`, `student_status`) VALUES ('$r_email','$s_password','$token','inactive')");
 
+            // mail body
+            $mailbody = "<div style='text-align:center;'><h2 style='margin:0px'>Your Activation Code!</h2> <br> <h4 style='margin:0px;'>Click the button below to activate the account👇</h4> <br> <a href='http://localhost/something_new/activate?token=$token' style='
+                line-height: 16px;
+                color: #ffffff;
+                font-weight: 400;
+                text-decoration: none;
+                font-size: 14px;
+                display: inline-block;
+                padding: 10px 24px;
+                background-color: #4184f3;
+                border-radius: 5px;
+                min-width: 90px;'>Activate account</span></a></div>";
+
+            $mailSender = mailSender($r_email, $mailbody);
             $r_email = $s_password = $scp_password = null;
 
             if ($student_data_insert) {
@@ -92,6 +150,10 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register'])) {
                 );
                 exit(json_encode($res));
             }
+
+            // call main function
+            $mailSender = mailSender($r_email, $mailbody);
+            $r_email = $s_password = $scp_password = null;
         }
     }
 }
