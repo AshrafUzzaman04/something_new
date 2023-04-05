@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
                 </div>
                 <div class="remmember_password">
                     <label for="checkbox"><input type="checkbox" id="checkbox" name="remember_me">Remmember Me</label>
-                    <a href="#">Forget Password</a>
+                    <a href="recoveremail">Forget Password</a>
                 </div>
 
                 <!-- all error msg -->
