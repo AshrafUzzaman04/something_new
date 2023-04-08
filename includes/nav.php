@@ -7,7 +7,13 @@
             <li><a href="javascript:void(0)" class="<?= basename($_SERVER['PHP_SELF']) == "about.php" ? "active" : null ?>">About</a></li>
             <li><a href=" javascript:void(0)" class="<?= basename($_SERVER['PHP_SELF']) == "service.php" ? "active" : null ?>">Service</a></li>
             <li><a href=" javascript:void(0)" class="<?= basename($_SERVER['PHP_SELF']) == "blog.php" ? "active" : null ?>">Blog</a></li>
-            <li><a href=" register"><img src="./assets/img/register.png" />Register</a></li>
+            <?php
+            if (isset($_SESSION['student_login'])) {
+            ?>
+                <li><a href="destroy"><img src="./assets/img/logout.png" />Log Out</a></li>
+            <?php
+            }
+            ?>
         </ul>
         <div class="search">
             <div class="icon text-white">
@@ -25,4 +31,5 @@
     <div class="search_box">
         <input type="text" placeholder="Search here . . . .">
     </div>
+
 </header>

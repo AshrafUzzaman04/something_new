@@ -2,6 +2,8 @@
 include_once('./connection.php');
 include_once('./includes/header.php');
 
+isset($_SESSION['student_login']) ? header("location: ./") : null;
+
 function sefuda($data)
 {
     $data = htmlspecialchars($data);
@@ -31,24 +33,43 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
         }
     }
 
-
     // password validation
     if (empty($log_Password)) {
         $error_pass = "Enter your password";
     } else {
-        $verify_data = $conn->query("SELECT * FROM `students` WHERE `student_pass` = '$log_Password';");
-        $verify_status = $conn->query("SELECT * FROM `students` WHERE `student_email` = '$log_Email' AND `student_status` = 'active';");
-        if ($verify_data->num_rows !== 1) {
-            $error_email = "Incorrect password!";
-        } elseif ($verify_status->num_rows !== 1) {
-            $error_email = "Activate ID through the link sent in Gmail!";
+        // fetch pass
+        $fetch_hash_pass = $verify_data->fetch_assoc();
+        $hash_pass = $fetch_hash_pass['student_pass'];
+
+        // decode and verify password
+        $password_decode = password_verify($log_Password, $hash_pass);
+        if ($password_decode) {
+            $verify_data = $conn->query("SELECT * FROM `students` WHERE `student_pass` = '$hash_pass';");
+
+            // active student 
+            $verify_status = $conn->query("SELECT * FROM `students` WHERE `student_email` = '$log_Email' AND `student_status` = 'active';");
+            if ($verify_data->num_rows !== 1) {
+                $error_pass = "Incorrect password!";
+            } elseif ($verify_status->num_rows !== 1) {
+                $error_email = "Activate ID through the link sent in Gmail!";
+            } else {
+                $correct_pass = mysqli_real_escape_string($conn, $log_Password);
+            }
         } else {
-            $correct_pass = mysqli_real_escape_string($conn, $log_Password);
+            $error_pass = "Incorrect password!";
         }
     }
 
 
     if (isset($correct_email) && isset($correct_pass)) {
+        $select_for_session_query = "SELECT * FROM `students` WHERE  `student_email` = '$correct_email' AND `student_pass` = '$password_decode'";
+        $select_for_session = $conn->query($select_for_session_query);
+
+        $fetch_this = $select_for_session->fetch_object();
+        $student_email = $fetch_this->student_email;
+        $student_gender = $fetch_this->student_gender;
+
+        $_SESSION['student_login'] = ["student_email" => $student_email, "student_gender" => $student_gender];
 
         if (isset($remember_me)) {
             // setcookie
@@ -76,7 +97,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
         <div class="form_box login">
             <form action="<?= htmlentities(substr($_SERVER['PHP_SELF'], 0, -4)) ?>" method="POST">
                 <h2>Sign In</h2>
-
                 <!-- email -->
                 <div class="input_box <?= $error_email ? "invalid" : null ?>">
                     <input type="email" name="log_Email" id="email" placeholder="Email" class="<?= $error_email ? "invalid" : null ?>" value="<?php
@@ -171,7 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
 
                 <div class="create_account">
                     <p><a href="./"><i class='bx bx-arrow-back'></i>back</a></p>
-                    <p>Already have an Account? <a href="javascript:void(0)" class="sign_in">Sign In</a></p>
+                    <p>Already have an Account? <a href="javascript:void(0)" class="sign_in" style="font-size: 20px;">Sign In</a></p>
                 </div>
             </form>
         </div>
@@ -181,10 +201,10 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
 <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 <script type="text/javascript">
     $('#register123').click(function() {
-        $('#register123').html('Sign Up <i style="font-size:24px;" class="fa-solid fa-spinner fa-spin"></i>');
+        $('#register123').html('Sign Up <i style="font-size:20px;" class="fa-solid fa-spinner fa-spin"></i>');
         setTimeout(function() {
             $('#register123').html('Sign Up');
-        }, 2300);
+        }, 3000);
         var r_email = $('#r_email').val();
         var s_password = $('#s_password').val();
         var scp_password = $('#scp_password').val();
@@ -226,7 +246,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
                     $('#success-msg').html(error_msg);
                     setInterval(() => {
                         location.href = "./register";
-                    }, 2300)
+                    }, 2500)
                 }
             }
         });

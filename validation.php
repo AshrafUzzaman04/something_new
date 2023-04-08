@@ -119,6 +119,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register'])) {
             );
             exit(json_encode($res));
         } else {
+            // php password bcrypt formate 
+            $s_password = password_hash($s_password, PASSWORD_BCRYPT);
             $student_data_insert = $conn->query("INSERT INTO `students`(`student_email`, `student_pass` , `token`, `student_status`) VALUES ('$r_email','$s_password','$token','inactive')");
 
             // mail body

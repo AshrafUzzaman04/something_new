@@ -1,3 +1,8 @@
 <?php
-session_start();
-$conn = mysqli_connect("localhost", "root", "", "something_new");
+
+$localhost = "localhost";
+$username = "root";
+$password = "";
+$database = "something_new";
+
+$conn = mysqli_connect($localhost, $username, $password, $database);
