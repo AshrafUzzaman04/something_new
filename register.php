@@ -73,8 +73,8 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
 
         if (isset($remember_me)) {
             // setcookie
-            setcookie('emailcookie', $correct_email, time() + 3600);
-            setcookie('passwordcookie', $correct_pass, time() + 3600);
+            setcookie('emailcookie', $correct_email, time() + 86400);
+            setcookie('passwordcookie', $correct_pass, time() + 86400);
 
             $log_Email = $log_Password = null;
             header("location:./");
@@ -129,7 +129,13 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
                 </div>
                 <div class="remmember_password">
                     <label for="checkbox"><input type="checkbox" id="checkbox" name="remember_me">Remmember Me</label>
-                    <a href="recoveremail">Forget Password</a>
+                    <?php
+                    $forget = "ABCDEFFGHIJKLMOPQRSTUVWXYZabcdefghijklmmnopqrstuvwxyz0123456789";
+                    $forget = str_shuffle($forget);
+                    $forget = strrev($forget);
+                    $forget = rand() . $forget . str_shuffle(date("FdYDlhisHaA"));
+                    ?>
+                    <a href="recoveremail?forget_pass=<?= $forget ?>">Forget Password</a>
                 </div>
 
                 <!-- all error msg -->

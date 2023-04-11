@@ -14,6 +14,15 @@ var s_hide = document.getElementById("s_hide");
 var scp_show = document.getElementById("scp_show");
 var scp_hide = document.getElementById("scp_hide");
 
+// reset password show and hide buttons
+var new_pass = document.getElementById("new_pass");
+var c_new_pass = document.getElementById("c_new_pass");
+var new_pass_show = document.getElementById("new_pass_show");
+var new_pass_hide = document.getElementById("new_pass_hide");
+var c_new_pass_show = document.getElementById("c_new_pass_show");
+var c_new_pass_hide = document.getElementById("c_new_pass_hide");
+
+
 sign_up.addEventListener("click", () => {
   login_section.classList.add("active");
 });
@@ -45,6 +54,18 @@ function s_toggle() {
   }
 }
 
+function new_pass_toggle() {
+  if (new_pass.type === "password") {
+    new_pass.type = "text";
+    new_pass_hide.style.display = "inline-block";
+    new_pass_show.style.display = "none";
+  } else {
+    new_pass.type = "password";
+    new_pass_hide.style.display = "none";
+    new_pass_show.style.display = "inline-block";
+  }
+}
+
 function scp_toggle() {
   if (scp_password.type === "password") {
     scp_password.type = "text";
@@ -56,3 +77,16 @@ function scp_toggle() {
     scp_show.style.display = "inline-block";
   }
 }
+
+function c_new_pass_toggle() {
+  if (c_new_pass.type === "password") {
+    c_new_pass.type = "text";
+    c_new_pass_hide.style.display = "inline-block";
+    c_new_pass_show.style.display = "none";
+  } else {
+    c_new_pass.type = "password";
+    c_new_pass_hide.style.display = "none";
+    c_new_pass_show.style.display = "inline-block";
+  }
+}
+

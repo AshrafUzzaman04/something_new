@@ -1,4 +1,5 @@
 <?php
+session_start();
 include_once("./includes/header.php");
 (!isset($_SESSION['student_login'])) ? header("location: ./register") : null;
 include_once("./includes/nav.php");

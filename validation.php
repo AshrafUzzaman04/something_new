@@ -1,5 +1,4 @@
 <?php
-
 include_once("./connection.php");
 
 
@@ -9,7 +8,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-function mailsender($recipient_email, $mailbody)
+function mailsender($recipient_email, $mailbody, $sub)
 {
     //Load Composer's autoloader
     require './PHPMailer/Exception.php';
@@ -34,7 +33,7 @@ function mailsender($recipient_email, $mailbody)
 
         //Content
         $mail->isHTML(true);                                  //Set email format to HTML
-        $mail->Subject = 'Your Activation Code!';
+        $mail->Subject = $sub;
         $mail->Body    = $mailbody;
 
         $mail->send();
@@ -54,12 +53,12 @@ function sefuda($data)
     return $data;
 }
 
-// sign up form validations
+// sign up form validations for ajax request
 if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register'])) {
     if (isset($_POST['r_email'], $_POST['s_password'], $_POST['scp_password'])) {
-        $r_email =  sefuda($_POST['r_email']);
-        $s_password = sefuda($_POST['s_password']);
-        $scp_password = sefuda($_POST['scp_password']);
+        $r_email =  mysqli_real_escape_string($conn, (sefuda($_POST['r_email'])));
+        $s_password = mysqli_real_escape_string($conn, sefuda($_POST['s_password']));
+        $scp_password = mysqli_real_escape_string($conn, sefuda($_POST['scp_password']));
 
         $token = bin2hex(random_bytes(10));
 
@@ -123,6 +122,9 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register'])) {
             $s_password = password_hash($s_password, PASSWORD_BCRYPT);
             $student_data_insert = $conn->query("INSERT INTO `students`(`student_email`, `student_pass` , `token`, `student_status`) VALUES ('$r_email','$s_password','$token','inactive')");
 
+            // email subject
+            $sub = "Your Activation Code!";
+
             // mail body
             $mailbody = "<div style='text-align:center;'><h2 style='margin:0px'>Your Activation Code!</h2> <br> <h4 style='margin:0px;'>Click the button below to activate the account👇</h4> <br> <a href='http://localhost/something_new/activate?token=$token' style='
                 line-height: 16px;
@@ -136,7 +138,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register'])) {
                 border-radius: 5px;
                 min-width: 90px;'>Activate account</span></a></div>";
 
-            $mailSender = mailSender($r_email, $mailbody);
+            $mailSender = mailSender($r_email, $mailbody, $sub);
             $r_email = $s_password = $scp_password = null;
 
             if ($student_data_insert) {
@@ -152,10 +154,127 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register'])) {
                 );
                 exit(json_encode($res));
             }
+        }
+    }
+}
 
-            // call main function
-            $mailSender = mailSender($r_email, $mailbody);
-            $r_email = $s_password = $scp_password = null;
+
+// recoveryemail validations
+if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['recover_email123'])) {
+    $recov_Email = mysqli_real_escape_string($conn, sefuda($_POST['recov_Email']));
+
+    // validation recovery email address
+    if (empty($recov_Email)) {
+        $error_recov_email = 'Please your email address';
+    } elseif (!filter_var($recov_Email, FILTER_VALIDATE_EMAIL)) {
+        $error_recov_email = 'Invalid email format!';
+    } else {
+        $search_email = $conn->query("SELECT * FROM `students` WHERE `student_email` = '$recov_Email'");
+
+        if ($search_email->num_rows == 1) {
+            $fetch_this_email_data  = mysqli_fetch_assoc($search_email);
+            $token = $fetch_this_email_data['token'];
+            $token = strrev($token);
+
+            // mail subject
+            $sub = "Verify your email address!";
+
+            // mail body
+            $mailbody = "<div style='text-align:center;'><h2 style='margin:0px'>Verify it's you!</h2> <br> <h4 style='margin:0px;'>Click the button below to verify it's you👇</h4> <br> <a href='http://localhost/something_new/reset_password?confirm_t=$token' style='
+            line-height: 16px;
+            color: #ffffff;
+            font-weight: 400;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-block;
+            padding: 10px 24px;
+            background-color: #4184f3;
+            border-radius: 5px;
+            min-width: 90px;'>Yes it's me</span></a></div>";
+
+            $_SESSION['activation_msg'] = "Click on the email message to verify that the email is yours!";
+            $mailSender = mailSender($recov_Email, $mailbody, $sub);
+            $recov_Email = null;
+            header("location: reset_password");
+        } else {
+            $error_recov_email = "Email does not exist!";
+        }
+    }
+}
+
+
+
+// update password setup
+if (isset($_GET['confirm_t'])) {
+    // reverse the get request
+    $confirm_t = strrev($_GET['confirm_t']);
+
+    $search_token = $conn->query("SELECT * FROM `students` WHERE `token` = '$confirm_t'");
+
+    if ($search_token->num_rows !== 1 || $search_token->num_rows == 0) {
+        $_SESSION['activation_msg'] = "Please Verify your email address!";
+        header("location: reset_password");
+    } else {
+        $fetch_email = mysqli_fetch_assoc($search_token);
+        $student_email = $fetch_email['student_email'];
+
+        $_SESSION['activation_msg'] = $student_email  . " has been verified";
+
+        if ($_SERVER['REQUEST_METHOD'] === "POST" || isset($_POST['updatepass123'])) {
+            $new_pass = mysqli_real_escape_string($conn, sefuda($_POST['new_pass']));
+            $c_new_pass = mysqli_real_escape_string($conn, sefuda($_POST['c_new_pass']));
+
+            $lowercase = preg_match('@[a-z]@', $new_pass);
+            $number    = preg_match('@[0-9]@', $new_pass);
+
+            if ($search_token->num_rows !== 0 || $search_token->num_rows == 1) {
+
+                if (empty($new_pass)) {
+                    $error_new_pass = "Enter your new password!";
+                } elseif ($lowercase || $number) {
+                    $error_new_pass = "You must use a strong password!";
+                } elseif (strlen($new_pass) < 6) {
+                    $error_new_pass = "Your password must be at least 6 digits long!";
+                } else {
+                    $correct_new_pass  = $conn->real_escape_string($new_pass);
+                }
+
+                if (empty($c_new_pass)) {
+                    $error_c_new_pass = "Enter your password again!";
+                } elseif ($new_pass !== $c_new_pass) {
+                    $error_c_new_pass = "Both passwords must be the same!";
+                } else {
+                    $correct_c_new_pass =  $conn->real_escape_string($c_new_pass);
+                }
+
+                if (isset($correct_c_new_pass) || isset($correct_new_pass)) {
+                    $has_pass = password_hash($c_new_pass, PASSWORD_BCRYPT);
+
+                    $token = bin2hex(random_bytes(14));
+
+                    $update_query = $conn->query("UPDATE `students` SET `student_pass`= '$has_pass' , `token` = '$token' WHERE `token` = '$confirm_t'");
+                    if ($update_query) {
+                        $_SESSION['activation_msg'] = "Password Updated Successfully!";
+                        $new_pass = $c_new_pass = null;
+?>
+                        <script>
+                            setInterval(function() {
+
+                                <?php
+                                header("location: register");
+                                unset($_SESSION['activation_msg']);
+                                ?>
+
+                            })
+                        </script>
+
+
+<?php
+                    } else {
+                        $error_verify = "Something Went Wrong!";
+                    }
+                }
+            }
         }
     }
 }
