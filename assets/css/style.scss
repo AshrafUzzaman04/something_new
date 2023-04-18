@@ -109,6 +109,34 @@ header {
         }
       }
     }
+    // update information
+    > .profile_pic {
+      width: max-content;
+      height: max-content;
+      > a {
+        text-decoration: none;
+        background-color: transparent;
+        width: 43px;
+        height: 43px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        transition: all 0.3s ease-in-out;
+        > img {
+          width: 38px;
+          height: 38px;
+          margin: 0;
+          transition: all 0.3s ease-in-out;
+        }
+        &:hover {
+          background: linear-gradient(to left, rgb(255, 153, 0), var(--red));
+        }
+      }
+      > .active {
+        background: linear-gradient(to left, rgb(255, 153, 0), var(--red));
+      }
+    }
     // search section header
     > .search {
       position: relative;

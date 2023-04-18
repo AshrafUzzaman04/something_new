@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
     } else {
         // fetch pass
         $fetch_hash_pass = $verify_data->fetch_assoc();
-        $hash_pass = $fetch_hash_pass['student_pass'];
+        $hash_pass = $fetch_hash_pass['student_pass'] ?? null;
 
         // decode and verify password
         $password_decode = password_verify($log_Password, $hash_pass);

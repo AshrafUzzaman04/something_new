@@ -1,9 +1,6 @@
 <?php
 include_once("./connection.php");
 
-
-//Import PHPMailer classes into the global namespace
-//These must be at the top of your script, not inside a function
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
@@ -22,8 +19,8 @@ function mailsender($recipient_email, $mailbody, $sub)
         $mail->isSMTP();                                            //Send using SMTP
         $mail->Host       = 'smtp.gmail.com';                     //Set the SMTP server to send through
         $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
-        $mail->Username   = 'ashraf.uzzaman04082004@gmail.com';                     //SMTP username
-        $mail->Password   = 'hkythzeirkteovuz';                            //SMTP password
+        $mail->Username   = 'anwarul.karimmsl@gmail.com';                     //SMTP username
+        $mail->Password   = 'lpngsqhxlzvpxbfu';                            //SMTP password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
         $mail->Port       = 465;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 
@@ -138,8 +135,9 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['register'])) {
                 border-radius: 5px;
                 min-width: 90px;'>Activate account</span></a></div>";
 
-            $mailSender = mailSender($r_email, $mailbody, $sub);
+            $mailSender = mailsender($r_email, $mailbody, $sub);
             $r_email = $s_password = $scp_password = null;
+
 
             if ($student_data_insert) {
                 $res = array(
@@ -177,7 +175,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['recover_email123'])) 
             $token = strrev($token);
 
             // mail subject
-            $sub = "Verify your email address!";
+            $subject = "Verify your email address!";
 
             // mail body
             $mailbody = "<div style='text-align:center;'><h2 style='margin:0px'>Verify it's you!</h2> <br> <h4 style='margin:0px;'>Click the button below to verify it's you👇</h4> <br> <a href='http://localhost/something_new/reset_password?confirm_t=$token' style='
@@ -192,89 +190,13 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['recover_email123'])) 
             border-radius: 5px;
             min-width: 90px;'>Yes it's me</span></a></div>";
 
-            $_SESSION['activation_msg'] = "Click on the email message to verify that the email is yours!";
-            $mailSender = mailSender($recov_Email, $mailbody, $sub);
+            $_SESSION['get_recover_email'] = $recov_Email;
+            $_SESSION['activation_msg'] = "Click on " . $_SESSION['get_recover_email'] . " to verify that the email is yours!";
+            $mailSender = mailSender($recov_Email, $mailbody, $subject);
+            header("location: reset_password?email=$recov_Email");
             $recov_Email = null;
-            header("location: reset_password");
         } else {
             $error_recov_email = "Email does not exist!";
-        }
-    }
-}
-
-
-
-// update password setup
-if (isset($_GET['confirm_t'])) {
-    // reverse the get request
-    $confirm_t = strrev($_GET['confirm_t']);
-
-    $search_token = $conn->query("SELECT * FROM `students` WHERE `token` = '$confirm_t'");
-
-    if ($search_token->num_rows !== 1 || $search_token->num_rows == 0) {
-        $_SESSION['activation_msg'] = "Please Verify your email address!";
-        header("location: reset_password");
-    } else {
-        $fetch_email = mysqli_fetch_assoc($search_token);
-        $student_email = $fetch_email['student_email'];
-
-        $_SESSION['activation_msg'] = $student_email  . " has been verified";
-
-        if ($_SERVER['REQUEST_METHOD'] === "POST" || isset($_POST['updatepass123'])) {
-            $new_pass = mysqli_real_escape_string($conn, sefuda($_POST['new_pass']));
-            $c_new_pass = mysqli_real_escape_string($conn, sefuda($_POST['c_new_pass']));
-
-            $lowercase = preg_match('@[a-z]@', $new_pass);
-            $number    = preg_match('@[0-9]@', $new_pass);
-
-            if ($search_token->num_rows !== 0 || $search_token->num_rows == 1) {
-
-                if (empty($new_pass)) {
-                    $error_new_pass = "Enter your new password!";
-                } elseif ($lowercase || $number) {
-                    $error_new_pass = "You must use a strong password!";
-                } elseif (strlen($new_pass) < 6) {
-                    $error_new_pass = "Your password must be at least 6 digits long!";
-                } else {
-                    $correct_new_pass  = $conn->real_escape_string($new_pass);
-                }
-
-                if (empty($c_new_pass)) {
-                    $error_c_new_pass = "Enter your password again!";
-                } elseif ($new_pass !== $c_new_pass) {
-                    $error_c_new_pass = "Both passwords must be the same!";
-                } else {
-                    $correct_c_new_pass =  $conn->real_escape_string($c_new_pass);
-                }
-
-                if (isset($correct_c_new_pass) || isset($correct_new_pass)) {
-                    $has_pass = password_hash($c_new_pass, PASSWORD_BCRYPT);
-
-                    $token = bin2hex(random_bytes(14));
-
-                    $update_query = $conn->query("UPDATE `students` SET `student_pass`= '$has_pass' , `token` = '$token' WHERE `token` = '$confirm_t'");
-                    if ($update_query) {
-                        $_SESSION['activation_msg'] = "Password Updated Successfully!";
-                        $new_pass = $c_new_pass = null;
-?>
-                        <script>
-                            setInterval(function() {
-
-                                <?php
-                                header("location: register");
-                                unset($_SESSION['activation_msg']);
-                                ?>
-
-                            })
-                        </script>
-
-
-<?php
-                    } else {
-                        $error_verify = "Something Went Wrong!";
-                    }
-                }
-            }
         }
     }
 }
