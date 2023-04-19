@@ -109,7 +109,7 @@ header {
         }
       }
     }
-    // update information
+    // profile image
     > .profile_pic {
       width: max-content;
       height: max-content;
@@ -549,6 +549,98 @@ header {
       letter-spacing: 12px;
       text-transform: uppercase;
       margin-left: 20px;
+    }
+  }
+}
+
+//===========================================================================
+//==================== update body section started here =====================
+//===========================================================================
+.update_yourSelf {
+  padding-top: 80px;
+  background: url("../img/update_bg.jpg");
+  min-height: 100vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  > .update_form {
+    margin: auto;
+    background-color: transparent;
+    width: max-content;
+    padding: 20px;
+    > form {
+      // profile image design
+      > .blur_image_bg {
+        margin: 20px;
+        position: relative;
+        width: 180px;
+        height: 180px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transform-style: preserve-3d;
+        transform: perspective(1000px);
+
+        > .inner {
+          border-radius: 50%;
+          background-color: red;
+          width: max-content;
+          height: max-content;
+          transform: translateZ(20px);
+          box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.3);
+          > img {
+            border-radius: 50%;
+            width: calc(180px - 38px);
+            height: calc(180px - 38px);
+          }
+          > label {
+            position: absolute;
+            bottom: 4%;
+            right: 4%;
+            padding: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            border-radius: 50%;
+            backdrop-filter: blur(50px);
+            background: rgba(255, 0, 0, 0.226);
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            > i {
+              margin: 0;
+              padding: 0;
+              color: var(--nav_bg);
+              font-size: 18px;
+            }
+            &:hover {
+              background: rgba(255, 0, 0, 0.521);
+            }
+          }
+        }
+        > .bg {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 15%;
+          top: 0;
+          left: 0;
+          transform: rotate(45deg);
+          position: absolute;
+          width: 180px;
+          height: 180px;
+          backdrop-filter: blur(2px);
+          box-shadow: 0px 0px 10px 3px rgba(255, 255, 255, 0.397);
+          background: rgba(255, 0, 0, 0.089);
+        }
+      }
+
+      // input fields
+      > .form_body_input {
+        width: 1200px;
+        margin-top: 80px;
+      }
     }
   }
 }
