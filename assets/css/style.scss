@@ -38,6 +38,7 @@ body {
 //============================== navbar header section ===================================
 //============================================================
 header {
+  z-index: 99;
   position: fixed;
   top: 0;
   left: 0;
@@ -583,8 +584,9 @@ header {
         transform: perspective(1000px);
 
         > .inner {
+          position: relative;
           border-radius: 50%;
-          background-color: red;
+          background-color: transparent;
           width: max-content;
           height: max-content;
           transform: translateZ(20px);
@@ -595,6 +597,7 @@ header {
             height: calc(180px - 38px);
           }
           > label {
+            transform: translateZ(20px);
             position: absolute;
             bottom: 4%;
             right: 4%;
@@ -632,14 +635,342 @@ header {
           height: 180px;
           backdrop-filter: blur(2px);
           box-shadow: 0px 0px 10px 3px rgba(255, 255, 255, 0.397);
-          background: rgba(255, 0, 0, 0.089);
+          background: rgba(255, 255, 255, 0.089);
         }
       }
 
       // input fields
       > .form_body_input {
-        width: 1200px;
+        max-width: 1200px;
         margin-top: 80px;
+        background: rgba(255, 255, 255, 0.089);
+        backdrop-filter: blur(10px);
+        padding: 50px;
+        border-radius: 15px;
+
+        // input grid
+        > .grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          grid-gap: 30px 50px;
+
+          // input fields styles
+          .wave-group {
+            position: relative;
+          }
+
+          .wave-group .input {
+            width: 300px;
+            font-size: 16px;
+            padding: 10px 10px 10px 5px;
+            display: block;
+            border: none;
+            color: white;
+            border-bottom: 1px solid #808080;
+            background: transparent;
+          }
+
+          .wave-group .input:focus {
+            outline: none;
+          }
+
+          .wave-group .label {
+            color: #b1b1b1;
+            font-size: 18px;
+            font-weight: normal;
+            position: absolute;
+            pointer-events: none;
+            left: 5px;
+            top: 10px;
+            display: flex;
+          }
+
+          .wave-group .label-char {
+            transition: 0.2s ease all;
+            transition-delay: calc(var(--index) * 0.05s);
+          }
+
+          .wave-group .input:focus ~ label .label-char,
+          .wave-group .input:valid ~ label .label-char {
+            transform: translateY(-20px);
+            font-size: 14px;
+            color: #ffffff;
+          }
+
+          .wave-group .bar {
+            position: relative;
+            display: block;
+            width: 300px;
+          }
+
+          .wave-group .bar:before,
+          .wave-group .bar:after {
+            content: "";
+            height: 2px;
+            width: 0;
+            bottom: 1px;
+            position: absolute;
+            background: #ffffff;
+            transition: 0.2s ease all;
+            -moz-transition: 0.2s ease all;
+            -webkit-transition: 0.2s ease all;
+          }
+
+          .wave-group .bar:before {
+            left: 50%;
+          }
+
+          .wave-group .bar:after {
+            right: 50%;
+          }
+
+          .wave-group .input:focus ~ .bar:before,
+          .wave-group .input:focus ~ .bar:after {
+            width: 50%;
+          }
+        }
+
+        // radio button styles gender
+        > .radio_gender {
+          .radio-container {
+            max-width: 300px;
+          }
+
+          .radio-wrapper {
+            display: inline-block;
+            margin: 10px;
+            margin-left: 0;
+          }
+
+          .radio-button {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+          }
+
+          .radio-button input[type="radio"] {
+            display: none;
+          }
+
+          .radio-checkmark {
+            position: relative;
+            width: 16px;
+            height: 16px;
+            margin-right: 10px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+          }
+
+          .radio-checkmark:before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #ffffff;
+            transition: all 0.2s ease-in-out;
+          }
+
+          .radio-button input[type="radio"]:checked ~ .radio-checkmark:before {
+            transform: translate(-50%, -50%) scale(1);
+          }
+
+          .radio-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+          }
+        }
+
+        // location selection styles
+        > .your_location {
+          > .form-select {
+            margin: 10px;
+            margin-left: 0;
+            display: inline-block;
+            width: max-content;
+            background-image: var(--bs-form-select-bg-img),
+              var(--bs-form-select-bg-icon, none);
+            background-color: rgba(255, 255, 255, 0.322);
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease-in-out;
+            > option {
+              background-color: #000000b4;
+              backdrop-filter: blur(10px);
+              &:hover {
+                background-color: #000000d3;
+              }
+            }
+            &:focus {
+              outline: none;
+              box-shadow: none;
+              border-bottom: 2px solid white;
+            }
+          }
+        }
+
+        // select your subject
+        > .subject_check {
+          .checkbox-wrapper-12 {
+            position: relative;
+          }
+
+          .checkbox-wrapper-12 > svg {
+            position: absolute;
+            top: -130%;
+            left: -170%;
+            width: 110px;
+            pointer-events: none;
+          }
+
+          .checkbox-wrapper-12 * {
+            box-sizing: border-box;
+          }
+
+          .checkbox-wrapper-12 input[type="checkbox"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
+            margin: 0;
+          }
+
+          .checkbox-wrapper-12 input[type="checkbox"]:focus {
+            outline: 0;
+          }
+
+          .checkbox-wrapper-12 .cbx {
+            // width
+            height: 20px;
+            top: calc(100px - 12px);
+            left: calc(100px - 12px);
+          }
+
+          .checkbox-wrapper-12 .cbx input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 21px;
+            height: 21px;
+            border: 2px solid #bfbfc0;
+            border-radius: 50%;
+          }
+
+          .checkbox-wrapper-12 .cbx label {
+            width: 21px;
+            height: 21px;
+            background: none;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: trasnlate3d(0, 0, 0);
+            pointer-events: none;
+          }
+
+          .checkbox-wrapper-12 .cbx svg {
+            position: absolute;
+            top: 4px;
+            left: 3px;
+            z-index: 1;
+            pointer-events: none;
+          }
+
+          .checkbox-wrapper-12 .cbx svg path {
+            stroke: #fff;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 19;
+            stroke-dashoffset: 19;
+            transition: stroke-dashoffset 0.3s ease;
+            transition-delay: 0.2s;
+          }
+
+          .checkbox-wrapper-12 .cbx input:checked + label {
+            animation: splash-12 0.6s ease forwards;
+          }
+
+          .checkbox-wrapper-12 .cbx input:checked + label + svg path {
+            stroke-dashoffset: 0;
+          }
+
+          @-moz-keyframes splash-12 {
+            40% {
+              background: #fba66e;
+              box-shadow: 0 -18px 0 -8px #fba66e, 16px -8px 0 -8px #fba66e,
+                16px 8px 0 -8px #fba66e, 0 18px 0 -8px #fba66e,
+                -16px 8px 0 -8px #fba66e, -16px -8px 0 -8px #fba66e;
+            }
+
+            100% {
+              background: #fba66e;
+              box-shadow: 0 -36px 0 -10px transparent,
+                32px -16px 0 -10px transparent, 32px 16px 0 -10px transparent,
+                0 36px 0 -10px transparent, -32px 16px 0 -10px transparent,
+                -32px -16px 0 -10px transparent;
+            }
+          }
+
+          @-webkit-keyframes splash-12 {
+            40% {
+              background: #fba66e;
+              box-shadow: 0 -18px 0 -8px #fba66e, 16px -8px 0 -8px #fba66e,
+                16px 8px 0 -8px #fba66e, 0 18px 0 -8px #fba66e,
+                -16px 8px 0 -8px #fba66e, -16px -8px 0 -8px #fba66e;
+            }
+
+            100% {
+              background: #fba66e;
+              box-shadow: 0 -36px 0 -10px transparent,
+                32px -16px 0 -10px transparent, 32px 16px 0 -10px transparent,
+                0 36px 0 -10px transparent, -32px 16px 0 -10px transparent,
+                -32px -16px 0 -10px transparent;
+            }
+          }
+
+          @-o-keyframes splash-12 {
+            40% {
+              background: #fba66e;
+              box-shadow: 0 -18px 0 -8px #fba66e, 16px -8px 0 -8px #fba66e,
+                16px 8px 0 -8px #fba66e, 0 18px 0 -8px #fba66e,
+                -16px 8px 0 -8px #fba66e, -16px -8px 0 -8px #fba66e;
+            }
+
+            100% {
+              background: #fba66e;
+              box-shadow: 0 -36px 0 -10px transparent,
+                32px -16px 0 -10px transparent, 32px 16px 0 -10px transparent,
+                0 36px 0 -10px transparent, -32px 16px 0 -10px transparent,
+                -32px -16px 0 -10px transparent;
+            }
+          }
+
+          @keyframes splash-12 {
+            40% {
+              background: #fba66e;
+              box-shadow: 0 -18px 0 -8px #fba66e, 16px -8px 0 -8px #fba66e,
+                16px 8px 0 -8px #fba66e, 0 18px 0 -8px #fba66e,
+                -16px 8px 0 -8px #fba66e, -16px -8px 0 -8px #fba66e;
+            }
+
+            100% {
+              background: #fba66e;
+              box-shadow: 0 -36px 0 -10px transparent,
+                32px -16px 0 -10px transparent, 32px 16px 0 -10px transparent,
+                0 36px 0 -10px transparent, -32px 16px 0 -10px transparent,
+                -32px -16px 0 -10px transparent;
+            }
+          }
+        }
       }
     }
   }
