@@ -1,6 +1,8 @@
 <?php
 include_once("./includes/header.php");
 include_once("./includes/nav.php");
+(!isset($_SESSION['student_login'])) ? header("location: ./register") : null;
+
 ?>
 <!-- update body section started here -->
 <section class="update_yourSelf">
@@ -19,7 +21,7 @@ include_once("./includes/nav.php");
                 <!-- student name -->
                 <div class="grid">
                     <div class="wave-group">
-                        <input required="" type="text" class="input">
+                        <input required="" type="text" class="input" value="<?= $_SESSION['student_login']['student_email'] ?>">
                         <span class="bar"></span>
                         <label class="label">
                             <span class="label-char" style="--index: 0">N</span>
@@ -45,7 +47,7 @@ include_once("./includes/nav.php");
 
                     <!-- student email -->
                     <div class="wave-group">
-                        <input required="" type="text" class="input">
+                        <input required="" type="email" class="input">
                         <span class="bar"></span>
                         <label class="label">
                             <span class="label-char" style="--index: 0">E</span>
@@ -55,56 +57,74 @@ include_once("./includes/nav.php");
                             <span class="label-char" style="--index: 4">l</span>
                         </label>
                     </div>
+
+                    <!-- student password -->
+                    <div class="wave-group">
+                        <input required="" type="password" class="input">
+                        <span class="bar"></span>
+                        <label class="label">
+                            <span class="label-char" style="--index: 0">P</span>
+                            <span class="label-char" style="--index: 1">a</span>
+                            <span class="label-char" style="--index: 2">s</span>
+                            <span class="label-char" style="--index: 3">s</span>
+                            <span class="label-char" style="--index: 4">w</span>
+                            <span class="label-char" style="--index: 5">o</span>
+                            <span class="label-char" style="--index: 6">r</span>
+                            <span class="label-char" style="--index: 7">d</span>
+                        </label>
+                    </div>
                 </div>
 
 
-                <!-- student gender -->
-                <div class="radio_gender mt-3 mb-1">
-                    <div class="radio-container">
-                        <h3 class="text-secondary">Gender</h3>
-                        <div class="radio-wrapper">
-                            <label class="radio-button">
-                                <input type="radio" name="gender" value="Male">
-                                <span class="radio-checkmark"></span>
-                                <span class="radio-label">Male</span>
-                            </label>
+                <div class="grid_2">
+                    <!-- student gender -->
+                    <div class="radio_gender mt-3 mb-1">
+                        <div class="radio-container">
+                            <h3 class="text-secondary">Gender</h3>
+                            <div class="radio-wrapper">
+                                <label class="radio-button">
+                                    <input type="radio" name="gender" value="Male" <?= $_SESSION['student_login']['student_gender'] == "Male" ? "checked" : null ?>>
+                                    <span class="radio-checkmark"></span>
+                                    <span class="radio-label">Male</span>
+                                </label>
+                            </div>
+
+                            <div class="radio-wrapper">
+                                <label class="radio-button">
+                                    <input type="radio" name="gender" id="option2" value="Female" <?= $_SESSION['student_login']['student_gender'] == "Female" ? "checked" : null ?>>
+                                    <span class="radio-checkmark"></span>
+                                    <span class="radio-label">Female</span>
+                                </label>
+                            </div>
+
+                            <div class="radio-wrapper">
+                                <label class="radio-button">
+                                    <input type="radio" name="gender" id="option3" value="Other" <?= $_SESSION['student_login']['student_gender'] == "Other" ? "checked" : null ?>>
+                                    <span class="radio-checkmark"></span>
+                                    <span class="radio-label">Other</span>
+                                </label>
+                            </div>
                         </div>
 
-                        <div class="radio-wrapper">
-                            <label class="radio-button">
-                                <input type="radio" name="gender" id="option2" value="Female">
-                                <span class="radio-checkmark"></span>
-                                <span class="radio-label">Female</span>
-                            </label>
-                        </div>
-
-                        <div class="radio-wrapper">
-                            <label class="radio-button">
-                                <input type="radio" name="gender" id="option3" value="Other">
-                                <span class="radio-checkmark"></span>
-                                <span class="radio-label">Other</span>
-                            </label>
-                        </div>
                     </div>
 
-                </div>
 
-
-                <!-- student location -->
-                <div class="your_location">
-                    <h3 class="text-secondary">Location</h3>
-                    <select class="form-select" aria-label="Default select example">
-                        <option selected> -- Division -- </option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
-                    </select>
-                    <select class="form-select" aria-label="Default select example">
-                        <option selected> -- District -- </option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
-                    </select>
+                    <!-- student location -->
+                    <div class="your_location">
+                        <h3 class="text-secondary">Location</h3>
+                        <select class="form-select" aria-label="Default select example">
+                            <option selected> -- Division -- </option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
+                        <select class="form-select" aria-label="Default select example">
+                            <option selected> -- District -- </option>
+                            <option value="1">One</option>
+                            <option value="2">Two</option>
+                            <option value="3">Three</option>
+                        </select>
+                    </div>
                 </div>
 
                 <!-- student subject -->
@@ -115,11 +135,11 @@ include_once("./includes/nav.php");
                     <div class="checkbox-wrapper-12">
                         <div class="cbx">
                             <input id="cbx-12" type="checkbox">
-                            <label for="cbx-12"></label>
-                            <svg width="15" height="14" viewBox="0 0 15 14" fill="none">
+                            <label for=" cbx-12"></label>
+                            <svg width="13" height="12" viewBox="0 0 15 14" fill="none">
                                 <path d="M2 8.36364L6.23077 12L13 2"></path>
                             </svg>
-                            <span>Web Development</span>
+                            <span class="sub_name">Web Design</span>
                         </div>
                     </div>
 
@@ -128,14 +148,15 @@ include_once("./includes/nav.php");
                         <div class="cbx">
                             <input id="cbx-12" type="checkbox">
                             <label for="cbx-12"></label>
-                            <svg width="15" height="14" viewBox="0 0 15 14" fill="none">
+                            <svg width="13" height="12" viewBox="0 0 15 14" fill="none">
                                 <path d="M2 8.36364L6.23077 12L13 2"></path>
                             </svg>
+                            <span class="sub_name">Web Development</span>
                         </div>
                     </div>
                 </div>
-
-                <div>
+                <!-- button for update -->
+                <div class="update_btn">
                     <button>Update</button>
                 </div>
             </div>

@@ -9,7 +9,7 @@ session_start();
             <li><a href="javascript:void(0)" class="<?= basename($_SERVER['PHP_SELF']) == "about.php" ? "active" : null ?>">About</a></li>
             <li><a href=" javascript:void(0)" class="<?= basename($_SERVER['PHP_SELF']) == "service.php" ? "active" : null ?>">Service</a></li>
             <li><a href=" javascript:void(0)" class="<?= basename($_SERVER['PHP_SELF']) == "blog.php" ? "active" : null ?>">Blog</a></li>
-            <li class="d-md-none"><a href=" javascript:void(0)" class="<?= basename($_SERVER['PHP_SELF']) == "updateProfile.php" ? "active" : null ?>">Update Profile</a></li>
+            <li class="d-md-none"><a href="updateProfile" class="<?= basename($_SERVER['PHP_SELF']) == "updateProfile.php" ? "active" : null ?>">Update Profile</a></li>
             <?php
             if (isset($_SESSION['student_login'])) {
             ?>
@@ -20,7 +20,7 @@ session_start();
         </ul>
 
         <!-- profile picture -->
-        <div class="profile_pic  d-none d-md-block">
+        <div class="profile_pic">
             <a href="updateProfile" class="ms-3 <?= basename($_SERVER['PHP_SELF']) == "updateProfile.php" ? "active" : null ?>"> <img src="assets/img/blank_pic.png" alt="profile_picture" class="rounded-circle pointer "></a>
         </div>
 

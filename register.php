@@ -62,24 +62,23 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['login123'])) {
 
 
     if (isset($correct_email) && isset($correct_pass)) {
-        $select_for_session_query = "SELECT * FROM `students` WHERE  `student_email` = '$correct_email' AND `student_pass` = '$password_decode'";
-        $select_for_session = $conn->query($select_for_session_query);
+        $select_for_session = $conn->query("SELECT * FROM `students` WHERE  `student_email` = '$correct_email'");
 
-        $fetch_this = $select_for_session->fetch_object();
-        $student_email = $fetch_this->student_email;
-        $student_gender = $fetch_this->student_gender;
-
-        $_SESSION['student_login'] = ["student_email" => $student_email, "student_gender" => $student_gender];
+        $fetch_this = mysqli_fetch_assoc($select_for_session);
+        $student_email = $fetch_this['student_email'];
+        $student_gender = $fetch_this['student_gender'];
 
         if (isset($remember_me)) {
             // setcookie
             setcookie('emailcookie', $correct_email, time() + 86400);
             setcookie('passwordcookie', $correct_pass, time() + 86400);
+            $_SESSION['student_login'] = ["student_email" => $student_email, "student_gender" => $student_gender];
 
             $log_Email = $log_Password = null;
             header("location:./");
             exit($mailSender);
         } else {
+            $_SESSION['student_login'] = ["student_email" => $student_email, "student_gender" => $student_gender];
             $log_Email = $log_Password = null;
             header("location:./");
         }
