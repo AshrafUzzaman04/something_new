@@ -3,25 +3,53 @@ include_once("./includes/header.php");
 include_once("./includes/nav.php");
 (!isset($_SESSION['student_login'])) ? header("location: ./register") : null;
 
+function sefuda($data)
+{
+    $data = htmlspecialchars($data);
+    $data = trim($data);
+    $data = stripslashes($data);
+
+    return $data;
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' || isset($_POST['updatePro123'])) {
+    $pp_img = sefuda(mysqli_real_escape_string($conn, $_FILES['profile_img']));
+    $studentName = sefuda(mysqli_real_escape_string($conn, $_POST['studentName']));
+    $studentMobileNo = sefuda(mysqli_real_escape_string($conn, $_POST['studentMobileNo']));
+    $studentEmail = sefuda(mysqli_real_escape_string($conn, $_POST['studentEmail']));
+    $studentPassword = sefuda(mysqli_real_escape_string($conn, $_POST['studentPassword']));
+    $studentGender = sefuda(mysqli_real_escape_string($conn, ($_POST['studentGender'] ?? null)));
+    $studentSubject = sefuda(mysqli_real_escape_string($conn, ($_POST['studentSubject'] ?? null)));
+    // location information
+    $divisionSelect = sefuda(mysqli_real_escape_string($conn, ($_POST['divisionSelect']) ?? null));
+    $districtSelect = sefuda(mysqli_real_escape_string($conn, ($_POST['districtSelect']) ?? null));
+
+    // name validation
+}
+
 ?>
 <!-- update body section started here -->
 <section class="update_yourSelf">
     <div class="update_form">
         <form action="" method="POST" enctype="multipart/form-data">
+
+            <!-- profile picture section -->
             <div class="blur_image_bg mx-auto" data-tilt>
                 <div class="inner">
                     <img src="./assets/img/blank_pic.png" alt="">
-                    <input type="file" id="pp_img" name="pp_img" class="d-none">
+                    <input type="file" id="pp_img" name="profile_img" class="d-none">
                     <label for="pp_img"><i class="fa-regular fa-image"></i></label>
                 </div>
                 <div class="bg"></div>
             </div>
+
+            <!-- other input section started here -->
             <div class="form_body_input">
 
                 <!-- student name -->
                 <div class="grid">
                     <div class="wave-group">
-                        <input required="" type="text" class="input" value="<?= $_SESSION['student_login']['student_email'] ?>">
+                        <input required="" type="text" name="studentName" class="input">
                         <span class="bar"></span>
                         <label class="label">
                             <span class="label-char" style="--index: 0">N</span>
@@ -33,7 +61,7 @@ include_once("./includes/nav.php");
 
                     <!-- student mobile -->
                     <div class="wave-group">
-                        <input required="" type="text" class="input">
+                        <input required="" type="text" name="studentMobileNo" class="input">
                         <span class="bar"></span>
                         <label class="label">
                             <span class="label-char" style="--index: 0">M</span>
@@ -47,7 +75,7 @@ include_once("./includes/nav.php");
 
                     <!-- student email -->
                     <div class="wave-group">
-                        <input required="" type="email" class="input">
+                        <input required="" type="email" name="studentEmail" class="input" value="<?= $_SESSION['student_login']['student_email'] ?>">
                         <span class="bar"></span>
                         <label class="label">
                             <span class="label-char" style="--index: 0">E</span>
@@ -60,7 +88,7 @@ include_once("./includes/nav.php");
 
                     <!-- student password -->
                     <div class="wave-group">
-                        <input required="" type="password" class="input">
+                        <input required="" type="password" name="studentPassword" class="input">
                         <span class="bar"></span>
                         <label class="label">
                             <span class="label-char" style="--index: 0">P</span>
@@ -83,7 +111,7 @@ include_once("./includes/nav.php");
                             <h3 class="text-secondary">Gender</h3>
                             <div class="radio-wrapper">
                                 <label class="radio-button">
-                                    <input type="radio" name="gender" value="Male" <?= $_SESSION['student_login']['student_gender'] == "Male" ? "checked" : null ?>>
+                                    <input type="radio" name="studentGender" id="option1" value="Male" <?= $_SESSION['student_login']['student_gender'] == "Male" ? "checked" : null ?>>
                                     <span class="radio-checkmark"></span>
                                     <span class="radio-label">Male</span>
                                 </label>
@@ -91,7 +119,7 @@ include_once("./includes/nav.php");
 
                             <div class="radio-wrapper">
                                 <label class="radio-button">
-                                    <input type="radio" name="gender" id="option2" value="Female" <?= $_SESSION['student_login']['student_gender'] == "Female" ? "checked" : null ?>>
+                                    <input type="radio" name="studentGender" id="option2" value="Female" <?= $_SESSION['student_login']['student_gender'] == "Female" ? "checked" : null ?>>
                                     <span class="radio-checkmark"></span>
                                     <span class="radio-label">Female</span>
                                 </label>
@@ -99,7 +127,7 @@ include_once("./includes/nav.php");
 
                             <div class="radio-wrapper">
                                 <label class="radio-button">
-                                    <input type="radio" name="gender" id="option3" value="Other" <?= $_SESSION['student_login']['student_gender'] == "Other" ? "checked" : null ?>>
+                                    <input type="radio" name="studentGender" id="option3" value="Other" <?= $_SESSION['student_login']['student_gender'] == "Other" ? "checked" : null ?>>
                                     <span class="radio-checkmark"></span>
                                     <span class="radio-label">Other</span>
                                 </label>
@@ -112,17 +140,19 @@ include_once("./includes/nav.php");
                     <!-- student location -->
                     <div class="your_location">
                         <h3 class="text-secondary">Location</h3>
-                        <select class="form-select" aria-label="Default select example">
+                        <select name="divisionSelect" class="form-select" aria-label="Default select example" onchange="myDivision(this.value)">
                             <option selected> -- Division -- </option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
+                            <option value="Barisal">Barisal</option>
+                            <option value="Chattogram">Chattogram</option>
+                            <option value="Dhaka">Dhaka</option>
+                            <option value="Khulna">Khulna</option>
+                            <option value="Mymensingh">Mymensingh</option>
+                            <option value="Rajshahi">Rajshahi</option>
+                            <option value="Rangpur">Rangpur</option>
+                            <option value="Sylhet">Sylhet</option>
                         </select>
-                        <select class="form-select" aria-label="Default select example">
+                        <select name="districtSelect" class="form-select" aria-label="Default select example" id="showingDistrict">
                             <option selected> -- District -- </option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
                         </select>
                     </div>
                 </div>
@@ -134,7 +164,7 @@ include_once("./includes/nav.php");
                     <!-- checkbox one -->
                     <div class="checkbox-wrapper-12">
                         <div class="cbx">
-                            <input id="cbx-12" type="checkbox">
+                            <input id="cbx-12" type="checkbox" value="Web Design" name="studentSubject">
                             <label for=" cbx-12"></label>
                             <svg width="13" height="12" viewBox="0 0 15 14" fill="none">
                                 <path d="M2 8.36364L6.23077 12L13 2"></path>
@@ -146,7 +176,7 @@ include_once("./includes/nav.php");
                     <!-- checkbox 2 -->
                     <div class="checkbox-wrapper-12">
                         <div class="cbx">
-                            <input id="cbx-12" type="checkbox">
+                            <input id="cbx-12" type="checkbox" value="Web Development" name="studentSubject">
                             <label for="cbx-12"></label>
                             <svg width="13" height="12" viewBox="0 0 15 14" fill="none">
                                 <path d="M2 8.36364L6.23077 12L13 2"></path>
@@ -157,12 +187,15 @@ include_once("./includes/nav.php");
                 </div>
                 <!-- button for update -->
                 <div class="update_btn">
-                    <button>Update</button>
+                    <button type="submit" name="updatePro123">Update</button>
                 </div>
             </div>
         </form>
     </div>
 </section>
+
+<!-- ajax cdn -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <!-- vanilla tilt js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js" integrity="sha512-RX/OFugt/bkgwRQg4B22KYE79dQhwaPp2IZaA/YyU3GMo/qY7GrXkiG6Dvvwnds6/DefCfwPTgCXnaC6nAgVYw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -171,6 +204,23 @@ include_once("./includes/nav.php");
         max: 25,
         speed: 400
     });
+</script>
+
+
+<!-- select location using ajax javascript -->
+<script>
+    function myDivision(data) {
+
+        const ajaxrequest = new XMLHttpRequest();
+        ajaxrequest.open('GET', 'http://localhost/something_new/validation?selectDistrict=' + data, 'TRUE');
+        ajaxrequest.send();
+
+        ajaxrequest.onreadystatechange = function() {
+            if (ajaxrequest.readyState == 4 && ajaxrequest.status == 200) {
+                document.getElementById("showingDistrict").innerHTML = ajaxrequest.responseText;
+            }
+        }
+    }
 </script>
 <?php
 include_once("./includes/footer.php");

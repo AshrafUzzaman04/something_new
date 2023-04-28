@@ -200,3 +200,87 @@ if ($_SERVER['REQUEST_METHOD'] === "POST" && isset($_POST['recover_email123'])) 
         }
     }
 }
+
+
+// select district by getting division data in php get method
+if (isset($_GET['selectDistrict'])) {
+    $value = $_GET['selectDistrict'];
+
+    $Barisal = array('Pirojpur', 'Jhalakati', 'Barishal', 'Bhola', 'Patuakhali', 'Barguna');
+
+    $Chattogram = array('Brahmanbaria', 'Cumilla', 'Chandpur', 'Lakshmipur', 'Noakhali', 'Feni', 'Chattogram', 'Cox’s Bazar', 'Khagrachhari', 'Rangamati', 'Bandarban');
+
+    $Dhaka = array('Tangail', 'Kishoreganj', 'Manikganj', 'Dhaka', 'Noakhali', 'Gazipur', 'Narsinghdi', 'Narayanganj', 'Munshiganj', 'Faridpur', 'Rajbari', 'Gopalganj', 'Madaripur', 'Shariatpur');
+
+    $Khulna = array('Kushtia', 'Meherpur', 'Chuadanga', 'Jhenaidah', 'Magura', 'Narail', 'Jashore', 'Satkhira', 'Khulna', 'Bagerhat');
+
+    $Mymensingh = array('Netrokona', 'Mymensingh', 'Sherpur', 'Jamalpur');
+
+    $Rajshahi = array('Joypurhat', 'Bogura', 'Naogaon', 'Natore', 'Nawabganj', 'Rajshahi', 'Sirajganj', 'Pabna');
+
+    $Rangpur = array('Panchagar', 'Thakurgaon', 'Dinajpur', 'Nilphamari', 'Lalmonirhat', 'Rangpur', 'Kurigram', 'Gaibandha');
+
+    $Sylhet = array('Sunamganj', 'Sylhet', 'Moulvibazar', 'Habiganj');
+
+    switch ($value) {
+        case 'Barisal':
+            echo "<option selected> -- District -- </option>";
+            foreach ($Barisal as $district) {
+                echo "<option value='$district'>$district</option>";
+            }
+            break;
+
+        case 'Chattogram':
+            echo "<option selected> -- District -- </option>";
+            foreach ($Chattogram as $district) {
+                echo "<option value='$district'>$district</option>";
+            }
+            break;
+
+        case 'Dhaka':
+            echo "<option selected> -- District -- </option>";
+            foreach ($Dhaka as $district) {
+                echo "<option value='$district'>$district</option>";
+            }
+            break;
+
+        case 'Khulna':
+            echo "<option selected> -- District -- </option>";
+            foreach ($Khulna as $district) {
+                echo "<option value='$district'>$district</option>";
+            }
+            break;
+
+        case 'Mymensingh':
+            echo "<option selected> -- District -- </option>";
+            foreach ($Mymensingh as $district) {
+                echo "<option value='$district'>$district</option>";
+            }
+            break;
+
+        case 'Rajshahi':
+            echo "<option selected> -- District -- </option>";
+            foreach ($Rajshahi as $district) {
+                echo "<option value='$district'>$district</option>";
+            }
+            break;
+
+        case 'Rangpur':
+            echo "<option selected> -- District -- </option>";
+            foreach ($Rangpur as $district) {
+                echo "<option value='$district'>$district</option>";
+            }
+            break;
+
+        case 'Sylhet':
+            echo "<option selected> -- District -- </option>";
+            foreach ($Sylhet as $district) {
+                echo "<option value='$district'>$district</option>";
+            }
+            break;
+
+        default:
+            echo "<option selected> -- District -- </option>";
+            break;
+    }
+}
