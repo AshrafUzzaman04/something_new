@@ -24,7 +24,92 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || isset($_POST['updatePro123'])) {
     $divisionSelect = sefuda(mysqli_real_escape_string($conn, ($_POST['divisionSelect']) ?? null));
     $districtSelect = sefuda(mysqli_real_escape_string($conn, ($_POST['districtSelect']) ?? null));
 
+
+    $gender_array = array("Male", "Female", "Other");
+    $divisionSelect_array = ["Barisal", "Chattogram", "Dhaka", "Khulna", "Mymensingh", "Rajshahi", "Rangpur", "Sylhet"];
+    $districtSelect_array = ['Pirojpur', 'Jhalakati', 'Barishal', 'Bhola', 'Patuakhali', 'Barguna', 'Brahmanbaria', 'Cumilla', 'Chandpur', 'Lakshmipur', 'Noakhali', 'Feni', 'Chattogram', 'Cox’s Bazar', 'Khagrachhari', 'Rangamati', 'Bandarban', 'Tangail', 'Kishoreganj', 'Manikganj', 'Dhaka', 'Noakhali', 'Gazipur', 'Narsinghdi', 'Narayanganj', 'Munshiganj', 'Faridpur', 'Rajbari', 'Gopalganj', 'Madaripur', 'Shariatpur', 'Kushtia', 'Meherpur', 'Chuadanga', 'Jhenaidah', 'Magura', 'Narail', 'Jashore', 'Satkhira', 'Khulna', 'Bagerhat', 'Netrokona', 'Mymensingh', 'Sherpur', 'Jamalpur', 'Joypurhat', 'Bogura', 'Naogaon', 'Natore', 'Nawabganj', 'Rajshahi', 'Sirajganj', 'Pabna', 'Panchagar', 'Thakurgaon', 'Dinajpur', 'Nilphamari', 'Lalmonirhat', 'Rangpur', 'Kurigram', 'Gaibandha', 'Sunamganj', 'Sylhet', 'Moulvibazar', 'Habiganj'];
+    $studentSubject_array = ["Web Design", "Web Development"];
+
+
     // name validation
+    if (!preg_match('/^[A-Za-z. ]*$/', $studentName)) {
+        $error_studentName = "Invalid username!";
+    } else {
+        $correct_studentName = mysqli_real_escape_string($conn, $studentName);
+    }
+
+    // mobile number validation
+    if (!preg_match('/^[0-9]{11}+$/', $studentMobileNo)) {
+        $error_studentMobileNo = "Invalid mobile number!";
+    } elseif (!is_int($studentMobileNo)) {
+        $error_studentMobileNo = "Invalid mobile number!";
+    } else {
+        $correct_studentMobileNo = mysqli_real_escape_string($conn, $studentMobileNo);
+    }
+
+    // email validation
+    if (!preg_match($studentEmail, FILTER_VALIDATE_EMAIL)) {
+        $error_studentEmail = "Invalid Email Address!";
+    } else {
+        $correct_studentEmail = mysqli_real_escape_string($conn, $studentEmail);
+    }
+
+
+    // password validation
+    $uppercase = preg_match('@[A-Z]@', $password);
+    $lowercase = preg_match('@[a-z]@', $password);
+    $number    = preg_match('@[0-9]@', $password);
+    if (empty($studentPassword)) {
+        $error_studentPassword = "Password Field can't empty!";
+    } elseif ($studentPassword < 8) {
+        $error_studentPassword = "Your password must be 8 characters long!";
+    } elseif (!$uppercase || !$lowercase) {
+        $error_studentPassword =  "Password selection by combining uppercase and lowercase letters!";
+    } elseif ($number) {
+        $error_studentPassword =  "There must be a number on the lower side";
+    } else {
+        $correct_studentPassword = mysqli_real_escape_string($conn, $studentPassword);
+    }
+
+    // gender validation
+    if (empty($studentGender)) {
+        $error_studentGender = "Fill the gender field!";
+    } elseif (!in_array($studentGender, $gender_array)) {
+        $error_studentGender = "Gender can't find!";
+    } elseif ($studentGender !== "Male" && $studentGender !== "Female" && $studentGender !== "Other") {
+        $error_studentGender = "Gender can't find!";
+    } else {
+        $correct_studentGender = mysqli_real_escape_string($conn, $studentGender);
+    }
+
+
+    // location validation
+    if (empty($divisionSelect)) {
+        $error_divisionSelect = "Please select a your Division!";
+    } elseif (!in_array($divisionSelect, $divisionSelect_array)) {
+        $error_divisionSelect = "Your Division can't find! try again.";
+    } elseif (empty($districtSelect)) {
+        $error_districtSelect = "Please select a your District after selecting Division!";
+    } elseif (!in_array($districtSelect, $districtSelect_array)) {
+        $error_districtSelect = "Your District can't find! try again.";
+    } else {
+        $correct_divisionSelect = mysqli_real_escape_string($conn, $divisionSelect);
+        $correct_districtSelect = mysqli_real_escape_string($conn, $districtSelect);
+    }
+
+
+    // student subject validation
+    if (empty($studentSubject)) {
+        $error_studentSubject = "Select your subject!";
+    } elseif (!in_array($studentSubject, $studentSubject_array)) {
+        $error_studentSubject = "Your Selected subject can't find! try again.";
+    } else {
+        $correct_studentSubject = mysqli_real_escape_string($conn, $studentSubject);
+    }
+
+
+    if ((isset($correct_studentName) && isset($correct_studentMobileNo) && isset($correct_studentEmail) && isset($correct_studentPassword) && isset($correct_studentGender) && isset($correct_divisionSelect) && isset($correct_districtSelect) && isset($correct_studentSubject))) {
+    }
 }
 
 ?>
@@ -61,7 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' || isset($_POST['updatePro123'])) {
 
                     <!-- student mobile -->
                     <div class="wave-group">
-                        <input required="" type="text" name="studentMobileNo" class="input">
+                        <input required="" type="text" name="studentMobileNo" class="input" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" maxlength="11">
                         <span class="bar"></span>
                         <label class="label">
                             <span class="label-char" style="--index: 0">M</span>

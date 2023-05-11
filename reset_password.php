@@ -5,7 +5,7 @@ include_once("./includes/header.php");
 (((!isset($_SESSION['activation_msg'])) || (!isset($_GET['email'])) || ($_GET['email'] !== $_SESSION['get_recover_email'])) && ((!isset($_GET['confirm_t'])) || ($_GET['confirm_t'] == ''))) ? header("location: ./") : null;
 
 // when user click the update button then include the validation page
-// ($_SERVER['REQUEST_METHOD'] === "POST" ||  isset($_POST['updatepass123'])) ? include_once("./validation.php") : null;
+($_SERVER['REQUEST_METHOD'] === "POST" ||  isset($_POST['updatepass123'])) ? include_once("./validation.php") : null;
 
 // update password setup
 if (isset($_GET['confirm_t'])) {
