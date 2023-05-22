@@ -3,7 +3,7 @@
 include_once("./connection.php");
 
 (!isset($_GET['forget_pass']) || $_GET['forget_pass'] == '') ? header("location: register") : null;
-($_SERVER['REQUEST_METHOD'] === "POST" ||  isset($_POST['recover_email123'])) ? include_once("./validation.php") : null;
+($_SERVER['REQUEST_METHOD'] === "POST" &&  isset($_POST['recover_email123'])) ? include_once("./validation.php") : null;
 include_once("./includes/header.php");
 ?>
 <section class="form_section">

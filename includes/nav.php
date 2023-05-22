@@ -1,5 +1,5 @@
 <?php
-session_start();
+// session_start();
 ?>
 <header id="navbar">
     <a href="./" class="logo"><img src="./assets/img/logo.png" alt=""></a>

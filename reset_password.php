@@ -5,7 +5,7 @@ include_once("./includes/header.php");
 (((!isset($_SESSION['activation_msg'])) || (!isset($_GET['email'])) || ($_GET['email'] !== $_SESSION['get_recover_email'])) && ((!isset($_GET['confirm_t'])) || ($_GET['confirm_t'] == ''))) ? header("location: ./") : null;
 
 // when user click the update button then include the validation page
-($_SERVER['REQUEST_METHOD'] === "POST" ||  isset($_POST['updatepass123'])) ? include_once("./validation.php") : null;
+($_SERVER['REQUEST_METHOD'] === "POST" &&  isset($_POST['updatepass123'])) ? include_once("./validation.php") : null;
 
 // update password setup
 if (isset($_GET['confirm_t'])) {
@@ -14,7 +14,7 @@ if (isset($_GET['confirm_t'])) {
 
     $search_token = $conn->query("SELECT * FROM `students` WHERE `token` = '$confirm_t'");
 
-    if ($search_token->num_rows !== 1 || $search_token->num_rows == 0) {
+    if ($search_token->num_rows !== 1 && $search_token->num_rows == 0) {
 
         $_SESSION['activation_msg'] = "Can't find your email address!";
         header("location: ./");
@@ -30,14 +30,14 @@ if (isset($_GET['confirm_t'])) {
             $new_pass = mysqli_real_escape_string($conn, sefuda($_POST['new_pass']));
             $c_new_pass = mysqli_real_escape_string($conn, sefuda($_POST['c_new_pass']));
 
-            $lowercase = preg_match('@[a-z]@', $new_pass);
-            $number    = preg_match('@[0-9]@', $new_pass);
+            $upercase = !preg_match('@[A-Z]@', $new_pass);
+            $number    = !preg_match('@[0-9]@', $new_pass);
 
             if ($search_token->num_rows !== 0 || $search_token->num_rows == 1) {
 
                 if (empty($new_pass)) {
                     $error_new_pass = "Enter your new password!";
-                } elseif ($lowercase || $number) {
+                } elseif ($upercase || $number) {
                     $error_new_pass = "You must use a strong password!";
                 } elseif (strlen($new_pass) < 6) {
                     $error_new_pass = "Your password must be at least 6 digits long!";
@@ -47,13 +47,13 @@ if (isset($_GET['confirm_t'])) {
 
                 if (empty($c_new_pass)) {
                     $error_c_new_pass = "Enter your password again!";
-                } elseif ($new_pass !== $c_new_pass) {
+                } elseif ($new_pass != $c_new_pass) {
                     $error_c_new_pass = "Both passwords must be the same!";
                 } else {
                     $correct_c_new_pass =  $conn->real_escape_string($c_new_pass);
                 }
 
-                if (isset($correct_c_new_pass) || isset($correct_new_pass)) {
+                if (isset($correct_c_new_pass) && isset($correct_new_pass)) {
                     $has_pass = password_hash($c_new_pass, PASSWORD_BCRYPT);
 
                     $token = bin2hex(random_bytes(14));
