@@ -602,12 +602,17 @@ header {
             border-radius: 50%;
             width: calc(180px - 38px);
             height: calc(180px - 38px);
+            object-fit: cover;
           }
-          > label {
+          >button{
             transform: translateZ(20px);
             position: absolute;
             bottom: 4%;
             right: 4%;
+            border: none;
+            background-color: transparent;
+            width: max-content;
+            > label {
             padding: 8px;
             display: flex;
             justify-content: center;
@@ -618,14 +623,16 @@ header {
             background: rgba(255, 0, 0, 0.226);
             cursor: pointer;
             transition: all 0.3s ease-in-out;
-            > i {
-              margin: 0;
-              padding: 0;
-              color: var(--nav_bg);
-              font-size: 18px;
-            }
-            &:hover {
-              background: rgba(255, 0, 0, 0.521);
+              cursor: pointer;
+              > i {
+                margin: 0;
+                padding: 0;
+                color: var(--nav_bg);
+                font-size: 18px;
+              }
+              &:hover {
+                background: rgba(255, 0, 0, 0.521);
+              }
             }
           }
         }

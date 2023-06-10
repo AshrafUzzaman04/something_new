@@ -13,8 +13,58 @@ function sefuda($data)
     return $data;
 }
 
+// image upload validation
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['file_email'])) {
+    $file_email =  $_POST['file_email'];
+    $file_name =  $_FILES['profile_img']['name'];
+    $tmp_name =  $_FILES['profile_img']['tmp_name'];
+
+    $alph = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    $ext = pathinfo($file_name, PATHINFO_EXTENSION);
+    $session_email =  $_SESSION['student_login']['student_email'];
+    $selectPreUserData = $conn->query("SELECT * FROM `students` WHERE `student_email` = '$session_email'");
+    $fetch =  $selectPreUserData->fetch_object();
+    $user_id = $fetch->student_id;
+    $user_img = $fetch->img;
+    $uniqeName = substr(str_shuffle($alph), 0, 8) . uniqid() . rand(100000, 999999) . date("YmdHis") . "." . $ext;
+    $destination = "./assets/img/users/$user_id/$uniqeName";
+    $path = "./assets/img/users/" . $user_id . "/" . $user_img;
+
+    if (empty($tmp_name)) {
+        $err_img = "Please upload an image.";
+    } elseif (!getimagesize($tmp_name)) {
+        $err_img = "Please upload an image file.";
+    } else {
+        if ($selectPreUserData->num_rows != 1) {
+            $err_img = "User Data not found!";
+        } else {
+            if ($user_img != null && $user_img != "") {
+                unlink($path);
+            }
+            (!is_dir("./assets/img/users/$user_id")) ? mkdir("./assets/img/users/$user_id") : null;
+            $move =  move_uploaded_file($tmp_name, $destination);
+            if (!$move) {
+                $err_img = "Images uploaded failed.";
+            } else {
+                $update_img = $conn->query("UPDATE `students` SET `img` = '$uniqeName' WHERE  `student_id` = '$user_id'");
+
+                if ($update_img) {
+                    $success_img = "Images uploaded successfully.";
+                    $_SESSION['student_login']['img'] = $uniqeName;
+                    echo "<script>
+                    setTimeout(function() {
+                        window.location.href = './updateProfile';
+                      }, 4000);
+                    </script>";
+                } else {
+                    $err_img = "Images uploaded failed.";
+                }
+            }
+        }
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['updatePro123'])) {
-    // $pp_img = mysqli_real_escape_string($conn, sefuda($_FILES['profile_img']));
     $studentName = mysqli_real_escape_string($conn, sefuda($_POST['studentName']));
     $studentMobileNo = mysqli_real_escape_string($conn, sefuda($_POST['studentMobileNo']));
     $studentEmail = mysqli_real_escape_string($conn, sefuda($_POST['studentEmail']));
@@ -33,18 +83,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['updatePro123'])) {
 
 
     // name validation
-    if (!preg_match('/^[A-Za-z. ]*$/', $studentName)) {
+    if (empty($studentName)) {
+        $error_studentName = "The name field cannot be empty!";
+    } elseif (!preg_match('/^[A-Za-z. ]*$/', $studentName)) {
         $error_studentName = "Invalid username!";
     } else {
         $correct_studentName = mysqli_real_escape_string($conn, $studentName);
     }
 
     // mobile number validation
-    if (!preg_match('/^[0-9]{11}+$/', $studentMobileNo)) {
+    if (empty($studentMobileNo)) {
+        $error_studentMobileNo = "Enter your mobile number!";
+    } elseif (!preg_match('/^[0-9]{11}+$/', $studentMobileNo)) {
+        $error_studentMobileNo = "Invalid mobile number!";
+    } elseif (!filter_var($studentMobileNo, FILTER_VALIDATE_INT)) {
         $error_studentMobileNo = "Invalid mobile number!";
     } elseif (!is_int($studentMobileNo)) {
         $error_studentMobileNo = "Invalid mobile number!";
-    } elseif ($studentMobileNo < 8) {
+    } elseif ($studentMobileNo < 11) {
         $error_studentMobileNo = "Your mobile number must be 11 characters long!";
     } else {
         $correct_studentMobileNo = mysqli_real_escape_string($conn, $studentMobileNo);
@@ -64,13 +120,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['updatePro123'])) {
     $uppercase = preg_match('@[A-Z]@', $password);
     $lowercase = preg_match('@[a-z]@', $password);
     $number    = preg_match('@[0-9]@', $password);
-    if (isset($studentPassword)) {
-        if ($studentPassword < 8) {
-            $error_studentPassword = "Your password must be 8 characters long!";
-        } elseif (!$uppercase || !$lowercase) {
+    if (isset($studentPassword) && !empty($studentPassword)) {
+        if (!$uppercase || !$lowercase) {
             $error_studentPassword =  "Password selection by combining uppercase and lowercase letters!";
-        } elseif ($number) {
-            $error_studentPassword =  "There must be a number on the lower side";
+        } elseif (!$number) {
+            $error_studentPassword =  "Your password must contain a number";
+        } elseif ($studentPassword < 8) {
+            $error_studentPassword = "Your password must be 8 characters long!";
         } else {
             $correct_studentPassword = mysqli_real_escape_string($conn, $studentPassword);
         }
@@ -123,17 +179,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['updatePro123'])) {
 <!-- update body section started here -->
 <section class="update_yourSelf">
     <div class="update_form">
-        <form action="" method="POST" enctype="multipart/form-data">
-
+        <form method="POST" enctype="multipart/form-data" id="imgUploadForm">
             <!-- profile picture section -->
-            <div class="blur_image_bg mx-auto" data-tilt>
+            <div class="blur_image_bg mx-auto">
                 <div class="inner">
-                    <img src="./assets/img/blank_pic.png" alt="">
+                    <input type="hidden" name="file_email" value="<?= $_SESSION['student_login']['student_email'] ?>">
+                    <?php
+                    $session_email =   $_SESSION['student_login']['student_email'];
+                    $session_img = $_SESSION['student_login']['img'];
+                    $selectPreUserData = $conn->query("SELECT * FROM `students` WHERE `student_email` = '$session_email'");
+                    $fetch = $selectPreUserData->fetch_object();
+                    $user_id = $fetch->student_id;
+                    ?>
+                    <img src="./assets/img/users/<?php
+                                                    if (isset($session_img) &&  $session_img != null && $session_img != "") {
+                                                        echo $user_id . "/" .  $session_img;
+                                                    } else {
+                                                        echo "blank_pic.png";
+                                                    } ?>" alt="" id="previewImage">
                     <input type="file" id="pp_img" name="profile_img" class="d-none">
-                    <label for="pp_img"><i class="fa-regular fa-image"></i></label>
+                    <button type="button"><label for="pp_img"><i class="fa-regular fa-image"></i></label></button>
                 </div>
                 <div class="bg"></div>
             </div>
+        </form>
+        <div class="text-center mt-3">
+            <span class="text-danger"><?= $err_img ?? null ?></span>
+            <span class="text-success"><?= $success_img ?? null ?></span>
+        </div>
+
+
+        <form method="POST">
 
             <!-- other input section started here -->
             <div class="form_body_input">
@@ -141,29 +217,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['updatePro123'])) {
                 <!-- student name -->
                 <div class="grid">
                     <div class="wave-group">
-                        <input required="" value="<?= $studentName ?? $_SESSION['student_login']['student_name'] ??  null ?>" type="text" name="studentName" class="input">
+                        <input value="<?= $studentName ?? $_SESSION['student_login']['student_name'] ??  null ?>" type="text" name="studentName" placeholder="Name" class="input">
                         <span class="bar"></span>
-                        <label class="label">
-                            <span class="label-char" style="--index: 0">N</span>
-                            <span class="label-char" style="--index: 1">a</span>
-                            <span class="label-char" style="--index: 2">m</span>
-                            <span class="label-char" style="--index: 3">e</span>
-                        </label>
                         <span class="text-danger"><?= $error_studentName ?? null ?></span>
                     </div>
 
                     <!-- student mobile -->
                     <div class="wave-group">
-                        <input required="false" type="text" value="<?= $studentMobileNo ?? $_SESSION['student_login']['student_mobile'] ??  null ?>" name="studentMobileNo" class="input" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" maxlength="11">
+                        <input type="text" value="<?= $studentMobileNo ?? $_SESSION['student_login']['student_mobile'] ??  null ?>" name="studentMobileNo" class="input" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" maxlength="11" placeholder="Mobile">
                         <span class="bar"></span>
-                        <label class="label">
-                            <span class="label-char" style="--index: 0">M</span>
-                            <span class="label-char" style="--index: 1">o</span>
-                            <span class="label-char" style="--index: 2">b</span>
-                            <span class="label-char" style="--index: 3">i</span>
-                            <span class="label-char" style="--index: 4">l</span>
-                            <span class="label-char" style="--index: 5">e</span>
-                        </label>
                         <span class="text-danger"><?= $error_studentMobileNo ?? null ?></span>
                     </div>
 
@@ -185,19 +247,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['updatePro123'])) {
                     <div class="wave-group">
                         <input type="password" placeholder="New Password" value="<?= $studentPassword ?? null ?>" name=" studentPassword" class="input">
                         <span class="bar"></span>
-                        <!-- <label class="label">
-                            <span class="label-char" style="--index: 0">N</span>
-                            <span class="label-char" style="--index: 2">e</span>
-                            <span class="label-char" style="--index: 3">w&nbsp;</span>
-                            <span class="label-char" style="--index: 4">P</span>
-                            <span class="label-char" style="--index: 5">a</span>
-                            <span class="label-char" style="--index: 6">s</span>
-                            <span class="label-char" style="--index: 7">s</span>
-                            <span class="label-char" style="--index: 8">w</span>
-                            <span class="label-char" style="--index: 9">o</span>
-                            <span class="label-char" style="--index: 10">r</span>
-                            <span class="label-char" style="--index: 11">d</span>
-                        </label> -->
                         <span class="text-danger"><?= $error_studentPassword ?? null ?></span>
                     </div>
                 </div>
@@ -337,6 +386,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['updatePro123'])) {
             }
         }
     }
+</script>
+
+<script>
+    const pp_img = document.getElementById("pp_img");
+    const imgUploadForm = document.getElementById("imgUploadForm");
+
+    pp_img.addEventListener("change", () => {
+        imgUploadForm.submit();
+    });
 </script>
 <?php
 include_once("./includes/footer.php");
