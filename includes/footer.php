@@ -19,6 +19,9 @@
 <!-- navigaiton -->
 <script src="assets/js/nav.js?<?php echo time(); ?>"></script>
 
+<!-- window title change -->
+<script src="./assets/js/titleCng.js"></script>
+
 </body>
 
 </html>

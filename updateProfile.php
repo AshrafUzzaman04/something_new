@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['file_email'])) {
     if (empty($tmp_name)) {
         $err_img = "Please upload an image.";
     } elseif (!getimagesize($tmp_name)) {
-        $err_img = "Please upload an image file.";
+        $err_img = "Select a valid image file!";
     } else {
         if ($selectPreUserData->num_rows != 1) {
             $err_img = "User Data not found!";

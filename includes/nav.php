@@ -1,5 +1,10 @@
 <?php
-// session_start();
+include_once("./connection.php");
+$session_email = $_SESSION['student_login']['student_email'];
+$session_img = $_SESSION['student_login']['img'];
+$select_data = $conn->query("SELECT * FROM `students` WHERE `student_email` = '$session_email'");
+$fetch = $select_data->fetch_object();
+$user_id = $fetch->student_id;
 ?>
 <header id="navbar">
     <a href="./" class="logo"><img src="./assets/img/logo.png" alt=""></a>
@@ -21,7 +26,7 @@
 
         <!-- profile picture -->
         <div class="profile_pic">
-            <a href="updateProfile" class="ms-3 <?= basename($_SERVER['PHP_SELF']) == "updateProfile.php" ? "active" : null ?>"> <img src="assets/img/blank_pic.png" alt="profile_picture" class="rounded-circle pointer "></a>
+            <a href="updateProfile" class="ms-3 <?= basename($_SERVER['PHP_SELF']) == "updateProfile.php" ? "active" : null ?>"> <img src="assets/img/users/<?= (isset($session_img) && $session_img != null) ? $user_id . "/" . $session_img : "blank_pic.png" ?>" alt="profile_picture" class="rounded-circle pointer "></a>
         </div>
 
         <!-- search icon -->
